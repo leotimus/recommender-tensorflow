@@ -56,11 +56,11 @@ def getBinaryMetricOps(labels, predictions, losses):
 
 def getOptimizer(optimizerName="Adam", learningRate=0.001):
   optimizerClasses = {
-    "Adagrad": tf.compat.v1.train.AdagradOptimizer,
-    "Adam": tf.compat.v1.train.AdamOptimizer,
-    "Ftrl": tf.compat.v1.train.FtrlOptimizer,
-    "RMSProp": tf.compat.v1.train.RMSPropOptimizer,
-    "SGD": tf.compat.v1.train.GradientDescentOptimizer,
+    "Adagrad": tf.optimizers.Adagrad,
+    "Adam": tf.optimizers.Adam,
+    "Ftrl": tf.optimizers.Ftrl,
+    "RMSProp": tf.optimizers.RMSprop,
+    "SGD": tf.optimizers.SGD,
   }
   optimizer = optimizerClasses[optimizerName](learning_rate=learningRate)
   return optimizer
