@@ -20,7 +20,7 @@ def trainAndEvaluate(args):
   trainSteps = args.train_steps
 
   # init
-  tf.logging.set_verbosity(tf.logging.INFO)
+  tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.INFO)
   if not restore:
     shutil.rmtree(jobDir, ignore_errors=True)
 
