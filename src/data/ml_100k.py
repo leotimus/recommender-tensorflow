@@ -25,13 +25,13 @@ DATA_CONFIG = {
 }
 
 
-def download_data(url="http://files.grouplens.org/datasets/movielens/ml-100k.zip",
-                  dest_dir="data"):
+def downloadData(url="http://files.grouplens.org/datasets/movielens/ml-100k.zip",
+                 dest_dir="data"):
     # prepare destination
     dest = Path(dest_dir) / Path(url).name
     dest.parent.mkdir(parents=True, exist_ok=True)
 
-    # downlaod zip
+    # download zip
     if not dest.exists():
         logger.info("downloading file: %s.", url)
         r = requests.get(url, stream=True)
@@ -46,8 +46,8 @@ def download_data(url="http://files.grouplens.org/datasets/movielens/ml-100k.zip
         logger.info("file extracted.")
 
 
-def load_data(src_dir="data/ml-100k"):
-    data = {item: dd.read_csv(str(Path(src_dir, conf["filename"])), sep=conf["sep"],
+def loadData(srcDir="data/ml-100k"):
+    data = {item: dd.read_csv(str(Path(srcDir, conf["filename"])), sep=conf["sep"],
                               header=None, names=conf["columns"], encoding="latin-1")
             for item, conf in DATA_CONFIG.items()}
 
@@ -55,7 +55,7 @@ def load_data(src_dir="data/ml-100k"):
     return data
 
 
-def process_data(data):
+def processData(data):
     # process users
     users = data["users"]
     users["zipcode1"] = users["zipcode"].str.get(0)
@@ -96,9 +96,9 @@ def process_data(data):
     return dfs
 
 
-def bigquery_process_data(dataset, client):
+def processBigQueryData(dataset, client):
     # process users
-    users_query = (
+    usersQuery = (
         "SELECT "
         "   user_id, age, gender, occupation, zipcode, "
         "   SUBSTR(zipcode, 0, 1) AS zipcode1,"
@@ -106,11 +106,11 @@ def bigquery_process_data(dataset, client):
         "   SUBSTR(zipcode, 0, 3) AS zipcode3 "
         "FROM {dataset}.users"
     ).format(dataset=dataset)
-    bigQueryToTable(users_query, "users_full", dataset, client)
+    bigQueryToTable(usersQuery, "users_full", dataset, client)
     logger.info("users processed.")
 
     # process items
-    items_query = (
+    itemsQuery = (
         "SELECT "
         "   item_id, title, release, video_release, imdb, "
         "   unknown, action, adventure, animation, children, comedy, "
@@ -121,12 +121,12 @@ def bigquery_process_data(dataset, client):
         "FROM {dataset}.items "
         "WHERE title != 'unknown'"
     ).format(dataset=dataset)
-    bigQueryToTable(items_query, "items_full", dataset, client)
+    bigQueryToTable(itemsQuery, "items_full", dataset, client)
     logger.info("items processed.")
 
     # process context and join users, items
     for table in ["all", "train", "test"]:
-        context_query = (
+        contextQuery = (
             "SELECT "
             "   user_id, item_id, rating, timestamp, "
             "   TIMESTAMP_SECONDS(timestamp) AS datetime, "
@@ -145,30 +145,30 @@ def bigquery_process_data(dataset, client):
             "JOIN {dataset}.users_features USING (user_id) "
             "JOIN {dataset}.items_features USING (item_id)"
         ).format(dataset=dataset, table=table)
-        bigQueryToTable(context_query, table + "_full", dataset, client)
+        bigQueryToTable(contextQuery, table + "_full", dataset, client)
         logger.info("%s processed.", table)
 
 
-def save_data(dfs, save_dir="data/ml-100k"):
+def saveData(dfs, saveDir="data/ml-100k"):
     for name, df in dfs.items():
         # save csv
-        save_path = str(Path(save_dir, name + ".csv"))
-        df.compute().to_csv(save_path, index=False, encoding="utf-8")
-        logger.info("data saved: %s.", save_path)
+        savePath = str(Path(saveDir, name + ".csv"))
+        df.compute().to_csv(savePath, index=False, encoding="utf-8")
+        logger.info("data saved: %s.", savePath)
 
 
-def local_main(args):
+def localMain(args):
     url = args.url
     dest = args.dest
 
-    download_data(url, dest)
+    downloadData(url, dest)
     data_dir = str(Path(dest, "ml-100k"))
-    data = load_data(data_dir)
-    dfs = process_data(data)
-    save_data(dfs, data_dir)
+    data = loadData(data_dir)
+    dfs = processData(data)
+    saveData(dfs, data_dir)
 
 
-def gcp_main(args):
+def gcpMain(args):
     url = args.url
     dest = args.dest
     dataset = args.dataset
@@ -176,9 +176,9 @@ def gcp_main(args):
     bucket = args.gcs_bucket
 
     # download, unzip and load data
-    download_data(url, dest)
-    data_dir = str(Path(dest, "ml-100k"))
-    data = load_data(data_dir)
+    downloadData(url, dest)
+    dataDir = str(Path(dest, "ml-100k"))
+    data = loadData(dataDir)
 
     client = getBigQueryClient(credentials)
 
@@ -187,7 +187,7 @@ def gcp_main(args):
         dfToBigQuery(df, name, args.dataset, client)
 
     # process data with bigquery
-    bigquery_process_data(args.dataset, client)
+    processBigQueryData(args.dataset, client)
 
     # export bigquery tables to gcs
     for name in data:
@@ -200,30 +200,30 @@ if __name__ == "__main__":
     subparsers = parser.add_subparsers(title="subcommands")
 
     # local download and preprocess
-    local_parser = subparsers.add_parser("local")
-    local_parser.add_argument("--url", default="http://files.grouplens.org/datasets/movielens/ml-100k.zip",
-                              help="url of MovieLens 100k data (default: %(default)s)")
-    local_parser.add_argument("--dest", default="data",
-                              help="destination directory for downloaded and extracted files (default: %(default)s)")
-    local_parser.add_argument("--log-path", default="main.log",
-                              help="path of log file (default: %(default)s)")
-    local_parser.set_defaults(main=local_main)
+    localParser = subparsers.add_parser("local")
+    localParser.add_argument("--url", default="http://files.grouplens.org/datasets/movielens/ml-100k.zip",
+                             help="url of MovieLens 100k data (default: %(default)s)")
+    localParser.add_argument("--dest", default="data",
+                             help="destination directory for downloaded and extracted files (default: %(default)s)")
+    localParser.add_argument("--log-path", default="main.log",
+                             help="path of log file (default: %(default)s)")
+    localParser.set_defaults(main=localMain)
 
     # gcp upload
-    gcp_parser = subparsers.add_parser("gcp")
-    gcp_parser.add_argument("--url", default="http://files.grouplens.org/datasets/movielens/ml-100k.zip",
-                            help="url of MovieLens 100k data (default: %(default)s)")
-    gcp_parser.add_argument("--dest", default="data",
-                            help="destination directory for downloaded and extracted files (default: %(default)s)")
-    gcp_parser.add_argument("--dataset", default="ml_100k",
-                            help="dataset name to save datatables")
-    gcp_parser.add_argument("--gcs-bucket", default="recommender-tensorflow",
-                            help="google cloud storage bucket to store processed files")
-    gcp_parser.add_argument("--credentials", default="credentials.json",
-                            help="json file containing google cloud credentials")
-    gcp_parser.add_argument("--log-path", default="main.log",
-                            help="path of log file (default: %(default)s)")
-    gcp_parser.set_defaults(main=gcp_main)
+    gcpParser = subparsers.add_parser("gcp")
+    gcpParser.add_argument("--url", default="http://files.grouplens.org/datasets/movielens/ml-100k.zip",
+                           help="url of MovieLens 100k data (default: %(default)s)")
+    gcpParser.add_argument("--dest", default="data",
+                           help="destination directory for downloaded and extracted files (default: %(default)s)")
+    gcpParser.add_argument("--dataset", default="ml_100k",
+                           help="dataset name to save datatables")
+    gcpParser.add_argument("--gcs-bucket", default="recommender-tensorflow",
+                           help="google cloud storage bucket to store processed files")
+    gcpParser.add_argument("--credentials", default="credentials.json",
+                           help="json file containing google cloud credentials")
+    gcpParser.add_argument("--log-path", default="main.log",
+                           help="path of log file (default: %(default)s)")
+    gcpParser.set_defaults(main=gcpMain)
 
     args = parser.parse_args()
 
