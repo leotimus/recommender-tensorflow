@@ -42,7 +42,7 @@ def getFeatureColumns(embeddingSize=4):
 def getInput(csvPath, mode=tf.estimator.ModeKeys.TRAIN, batchSize=32, cutoff=5):
   def inputFn():
     def parseCsv(value):
-      columns = tf.decode_csv(value, DEFAULTS) #TODO fix method not found
+      columns = tf.compat.v1.decode_csv(value, DEFAULTS)
       features = dict(zip(COLUMNS, columns))
       label = features.pop(LABEL_COL)
       label = tf.math.greater_equal(label, cutoff)
@@ -62,19 +62,19 @@ def getInput(csvPath, mode=tf.estimator.ModeKeys.TRAIN, batchSize=32, cutoff=5):
 
 
 def servingInput():
-  featurePlaceholders = { #TODO replace placeholder
-    "user_id": tf.placeholder(tf.int32, [None]),
-    "item_id": tf.placeholder(tf.int32, [None]),
+  featurePlaceholders = {
+    "user_id": tf.compat.v1.placeholder(tf.int32, [None]),
+    "item_id": tf.compat.v1.placeholder(tf.int32, [None]),
 
-    "age": tf.placeholder(tf.int32, [None]),
-    "gender": tf.placeholder(tf.string, [None]),
-    "occupation": tf.placeholder(tf.string, [None]),
-    "zipcode": tf.placeholder(tf.string, [None]),
+    "age": tf.compat.v1.placeholder(tf.int32, [None]),
+    "gender": tf.compat.v1.placeholder(tf.string, [None]),
+    "occupation": tf.compat.v1.placeholder(tf.string, [None]),
+    "zipcode": tf.compat.v1.placeholder(tf.string, [None]),
 
-    "release_year": tf.placeholder(tf.int32, [None]),
+    "release_year": tf.compat.v1.placeholder(tf.int32, [None]),
   }
   featurePlaceholders.update({
-    col: tf.placeholder_with_default(tf.constant([0]), [None]) for col in GENRE
+    col: tf.compat.v1.placeholder_with_default(tf.constant([0]), [None]) for col in GENRE
   })
 
   features = {

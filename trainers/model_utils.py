@@ -23,7 +23,7 @@ def getBinaryPredictions(logits):
 def getBinaryLosses(labels, predictions):
   with tf.name_scope("losses"):
     labels = tf.expand_dims(labels, -1)
-    unreducedLoss = tf.losses.sigmoid_cross_entropy(labels, predictions["logits"],
+    unreducedLoss = tf.compat.v1.losses.sigmoid_cross_entropy(labels, predictions["logits"],
                                                     reduction=tf.losses.Reduction.NONE)
     averageLoss = tf.reduce_mean(unreducedLoss)
     loss = tf.reduce_sum(unreducedLoss)
@@ -39,10 +39,10 @@ def getBinaryLosses(labels, predictions):
 def getBinaryMetricOps(labels, predictions, losses):
   with tf.name_scope("metrics"):
     labels = tf.expand_dims(labels, -1)
-    averageLoss = tf.metrics.mean(losses["unreduced_loss"])
-    accuracy = tf.metrics.accuracy(labels, predictions["class_id"], name="accuracy")
-    auc = tf.metrics.auc(labels, predictions["probabilities"], name="auc")
-    aucPrecisionRecall = tf.metrics.auc(labels, predictions["probabilities"],
+    averageLoss = tf.compat.v1.metrics.mean(losses["unreduced_loss"])
+    accuracy = tf.compat.v1.metrics.accuracy(labels, predictions["class_id"], name="accuracy")
+    auc = tf.compat.v1.metrics.auc(labels, predictions["probabilities"], name="auc")
+    aucPrecisionRecall = tf.compat.v1.metrics.auc(labels, predictions["probabilities"],
                                         curve="PR", name="auc_precision_recall")
 
   metrics = {
@@ -56,11 +56,11 @@ def getBinaryMetricOps(labels, predictions, losses):
 
 def getOptimizer(optimizerName="Adam", learningRate=0.001):
   optimizerClasses = {
-    "Adagrad": tf.train.AdagradOptimizer,
-    "Adam": tf.train.AdamOptimizer,
-    "Ftrl": tf.train.FtrlOptimizer,
-    "RMSProp": tf.train.RMSPropOptimizer,
-    "SGD": tf.train.GradientDescentOptimizer,
+    "Adagrad": tf.compat.v1.train.AdagradOptimizer,
+    "Adam": tf.compat.v1.train.AdamOptimizer,
+    "Ftrl": tf.compat.v1.train.FtrlOptimizer,
+    "RMSProp": tf.compat.v1.train.RMSPropOptimizer,
+    "SGD": tf.compat.v1.train.GradientDescentOptimizer,
   }
   optimizer = optimizerClasses[optimizerName](learning_rate=learningRate)
   return optimizer

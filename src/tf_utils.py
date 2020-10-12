@@ -27,7 +27,7 @@ def ddTfRecord(df, tfRecordPath):
                 for colName, colType in df.head().dtypes.items()}
 
     # save tfrecord
-    with tf.python_io.TFRecordWriter(tfRecordPath) as writer:
+    with tf.compat.v1.python_io.TFRecordWriter(tfRecordPath) as writer:
         for row in df.itertuples():
             example = tf.train.Example(
                 features=tf.train.Features(
@@ -47,7 +47,7 @@ def tfCsvDataset(csvPath, labelCol, colDefaults, shuffle=False, batchSize=32):
                        for colName, colType in df.dtypes.items()]
 
     def parse_csv(value):
-        columns = tf.decode_csv(value, recordDefaults)
+        columns = tf.compat.v1.decode_csv(value, recordDefaults)
         features = dict(zip(df.columns.tolist(), columns))
         label = features[labelCol]
         return features, label

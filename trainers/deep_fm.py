@@ -35,8 +35,8 @@ def modelFn(features, labels, mode, params):
 
   logits = 0
   if useLinear:
-    with tf.variable_scope("linear"):  # TODO replace
-      linear_logit = tf.feature_column.linear_model(features, categoricalColumns + numericColumns)
+    with tf.compat.v1.variable_scope("linear"):
+      linear_logit = tf.compat.v1.feature_column.linear_model(features, categoricalColumns + numericColumns)
       # [None, 1]
 
       with tf.name_scope("linear"):
@@ -45,13 +45,13 @@ def modelFn(features, labels, mode, params):
       # [None, 1]
 
   if useMf or useDnn:
-    with tf.variable_scope("input_layer"):
+    with tf.compat.v1.variable_scope("input_layer"):
       # categorical input
       categoricalDim = len(categoricalColumns)
       if categoricalDim > 0:
         embeddingColumns = [tf.feature_column.embedding_column(col, embeddingSize)
                             for col in categoricalColumns]
-        embeddingInputs = tf.feature_column.input_layer(features, embeddingColumns)
+        embeddingInputs = tf.compat.v1.feature_column.input_layer(features, embeddingColumns)
         # [None, c_d * embedding_size]
         inputLayer = embeddingInputs
         # [None, c_d * embedding_size]
@@ -59,9 +59,9 @@ def modelFn(features, labels, mode, params):
       # numeric input
       numericDim = len(numericColumns)
       if numericDim > 0:
-        numericInputs = tf.expand_dims(tf.feature_column.input_layer(features, numericColumns), -1)
+        numericInputs = tf.expand_dims(tf.compat.v1.feature_column.input_layer(features, numericColumns), -1)
         # [None, n_d, 1]
-        numericEmbeddings = tf.get_variable("numeric_embeddings", [1, numericDim, embeddingSize])
+        numericEmbeddings = tf.compat.v1.get_variable("numeric_embeddings", [1, numericDim, embeddingSize])
         # [1, n_d, embedding_size]
         numericEmbeddingInputs = tf.reshape(numericEmbeddings * numericInputs,
                                             [-1, numericDim * embeddingSize])
@@ -74,7 +74,7 @@ def modelFn(features, labels, mode, params):
           # [None, d * embedding_size]
 
     if useMf:
-      with tf.variable_scope("mf"):
+      with tf.compat.v1.variable_scope("mf"):
         # reshape flat embedding input layer to matrix
         embeddingMat = tf.reshape(inputLayer, [-1, categoricalDim + numericDim, embeddingSize])
         # [None, d, embedding_size]
@@ -91,21 +91,21 @@ def modelFn(features, labels, mode, params):
         # [None, 1]
 
     if useDnn:
-      with tf.variable_scope("dnn/dnn"):
+      with tf.compat.v1.variable_scope("dnn/dnn"):
         net = inputLayer
         # [None, d * embedding_size]
 
         for i, hidden_size in enumerate(hiddenUnits):
-          with tf.variable_scope("hiddenlayer_%s" % i):
-            net = tf.layers.dense(net, hidden_size, activation=activationFn)
+          with tf.compat.v1.variable_scope("hiddenlayer_%s" % i):
+            net = tf.compat.v1.layers.dense(net, hidden_size, activation=activationFn)
             # [None, hidden_size]
             if dropout > 0 and mode == tf.estimator.ModeKeys.TRAIN:
-              net = tf.layers.dropout(net, rate=dropout, training=True)
+              net = tf.compat.v1.layers.dropout(net, rate=dropout, training=True)
               # [None, hidden_size]
             layerSummary(net)
 
-        with tf.variable_scope('logits'):
-          dnnLogit = tf.layers.dense(net, 1)
+        with tf.compat.v1.variable_scope('logits'):
+          dnnLogit = tf.compat.v1.layers.dense(net, 1)
           # [None, 1]
           layerSummary(dnnLogit)
         logits += dnnLogit
@@ -115,7 +115,7 @@ def modelFn(features, labels, mode, params):
     layerSummary(logits)
 
   optimizer = getOptimizer(optimizer, learningRate)
-  head = tf.contrib.estimator.binary_classification_head()
+  head = tf.estimator.BinaryClassHead()
   return head.create_estimator_spec(
     features=features,
     mode=mode,
@@ -143,7 +143,7 @@ def trainAndEvaluate(args):
   trainSteps = args.train_steps
 
   # init
-  tf.logging.set_verbosity(tf.logging.INFO)
+  tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.INFO)
   if not restore:
     shutil.rmtree(jobDir, ignore_errors=True)
 
