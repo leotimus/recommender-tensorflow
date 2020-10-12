@@ -7,11 +7,11 @@ from zipfile import ZipFile
 import dask.dataframe as dd
 import requests
 
-from src.gcp_utils import (get_bigquery_client, df_to_bigquery,
-                           bigquery_to_table, bigquery_to_gcs)
-from src.logger import get_logger
+from src.gcp_utils import (getBigQueryClient, dfToBigQuery,
+                           bigQueryToTable, bigQueryToGCS)
+from src.logger import getLogger
 
-logger = get_logger(__name__)
+logger = getLogger(__name__)
 
 DATA_CONFIG = {
     "users": {"filename": "u.user", "sep": "|", "columns": ["user_id", "age", "gender", "occupation", "zipcode"]},
@@ -106,7 +106,7 @@ def bigquery_process_data(dataset, client):
         "   SUBSTR(zipcode, 0, 3) AS zipcode3 "
         "FROM {dataset}.users"
     ).format(dataset=dataset)
-    bigquery_to_table(users_query, "users_full", dataset, client)
+    bigQueryToTable(users_query, "users_full", dataset, client)
     logger.info("users processed.")
 
     # process items
@@ -121,7 +121,7 @@ def bigquery_process_data(dataset, client):
         "FROM {dataset}.items "
         "WHERE title != 'unknown'"
     ).format(dataset=dataset)
-    bigquery_to_table(items_query, "items_full", dataset, client)
+    bigQueryToTable(items_query, "items_full", dataset, client)
     logger.info("items processed.")
 
     # process context and join users, items
@@ -145,7 +145,7 @@ def bigquery_process_data(dataset, client):
             "JOIN {dataset}.users_features USING (user_id) "
             "JOIN {dataset}.items_features USING (item_id)"
         ).format(dataset=dataset, table=table)
-        bigquery_to_table(context_query, table + "_full", dataset, client)
+        bigQueryToTable(context_query, table + "_full", dataset, client)
         logger.info("%s processed.", table)
 
 
@@ -180,11 +180,11 @@ def gcp_main(args):
     data_dir = str(Path(dest, "ml-100k"))
     data = load_data(data_dir)
 
-    client = get_bigquery_client(credentials)
+    client = getBigQueryClient(credentials)
 
     # upload data to bigquery
     for name, df in data.items():
-        df_to_bigquery(df, name, args.dataset, client)
+        dfToBigQuery(df, name, args.dataset, client)
 
     # process data with bigquery
     bigquery_process_data(args.dataset, client)
@@ -192,7 +192,7 @@ def gcp_main(args):
     # export bigquery tables to gcs
     for name in data:
         path = "{dest}/ml-100k/{table}.csv".format(dest=dest, table=name)
-        bigquery_to_gcs(name + "_full", dataset, path, bucket, client)
+        bigQueryToGCS(name + "_full", dataset, path, bucket, client)
 
 
 if __name__ == "__main__":
@@ -227,7 +227,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    logger = get_logger(__name__, log_path=args.log_path, console=True)
+    logger = getLogger(__name__, logPath=args.log_path, console=True)
     logger.debug("call: %s.", " ".join(sys.argv))
     logger.debug("ArgumentParser: %s.", args)
 
