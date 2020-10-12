@@ -114,6 +114,12 @@ def modelFn(features, labels, mode, params):
   with tf.name_scope("deep_fm/logits"):
     layerSummary(logits)
 
+  inputs = tf.keras.Input(shape=(3,))
+  x = tf.keras.layers.Dense(4, activation=tf.nn.relu)(inputs)
+  outputs = tf.keras.layers.Dense(5, activation=tf.nn.softmax)(x)
+  model = tf.keras.Model(inputs=inputs, outputs=outputs) #TODO fix this https://colab.research.google.com/github/tensorflow/lattice/blob/master/docs/tutorials/custom_estimators.ipynb#scrollTo=n2Zrv6OPaQO2
+  # model = tf.keras.Model()
+
   optimizer = getOptimizer(optimizer, learningRate)
   head = tf.estimator.BinaryClassHead()
   return head.create_estimator_spec(
@@ -121,7 +127,8 @@ def modelFn(features, labels, mode, params):
     mode=mode,
     labels=labels,
     optimizer=optimizer,
-    logits=logits
+    logits=logits,
+    trainable_variables=model.trainable_variables
   )
 
 
