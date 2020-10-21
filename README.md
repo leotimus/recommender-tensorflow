@@ -28,18 +28,6 @@ The trainer module in this repository also allows for distributed model training
 - `optimizer`: learning optimiser (default: `"Adam"`)
 - `learning_rate`: learning rate (default: `0.001`)
 
-## Setup
-
-```bash
-# clone repo
-git clone git@github.com:yxtay/recommender-tensorflow.git && cd recommender-tensorflow
-
-# create conda environment
-conda env create -f=environment.yml
-
-# activate environment
-source activate dl
-```
 ## Download & Process Data
 
 The [MovieLens 100K Dataset](https://grouplens.org/datasets/movielens/100k/) is used for demonstration purpose. The following script downloads the data, processes and enriches it with a few basic features and serialises it to `csv`.
