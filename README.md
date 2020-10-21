@@ -127,6 +127,7 @@ python -m trainers.linear_deep
 ## Distributed
 
 For distributed model training and evaluation, please refer to [distributed](distributed.md).
+Changed
 
 ## References
 
