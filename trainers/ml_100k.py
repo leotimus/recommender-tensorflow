@@ -20,7 +20,6 @@ def get_feature_columns(embedding_size=4):
     item_fc = tf.feature_column.categorical_column_with_hash_bucket("item_id", 2000, tf.int32)
 
     # user features
-    # user features
     age_fc = tf.feature_column.numeric_column("age")
     age_buckets = tf.feature_column.bucketized_column(age_fc, list(range(15, 66, 10)))
     gender_fc = tf.feature_column.categorical_column_with_vocabulary_list(
