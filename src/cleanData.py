@@ -6,9 +6,8 @@ def joinStr(line):
 	strDelCount = None
 	for i in range(len(line)):
 		if last != None:
-			if line[i] != "" and line[i][-1] == "\"":
-				strDelCount += line[i].count("\"")
-				if not strDelCount % 2:
+			strDelCount += line[i].count("\"")
+			if line[i] != "" and line[i][-1] == "\"" and not strDelCount % 2:
 					res.append("".join(line[last : i+1]))
 					last = None
 			else:
