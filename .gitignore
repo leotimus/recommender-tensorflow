@@ -15,3 +15,5 @@
 *.ipynb
 main.log*
 venv
+
+.vscode/
