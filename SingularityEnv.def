@@ -25,6 +25,7 @@ IncludeCmd: yes
 	pip3 install pydot
 	pip3 install graphviz
 	pip3 install smbprotocol
+	pip3 install tensorflow_recommenders
 	apt-get install -y cifs-utils
 
 
