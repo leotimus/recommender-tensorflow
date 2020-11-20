@@ -100,6 +100,7 @@ def populateDataset(filename, newFilename, addProb, explicitVal, implicitVal, bu
 	#create a set containing the existing pairs
 	nbrLine = len(data["MATERIAL"])
 	explicit = set()
+		
 	for i in range(nbrLine):
 		print("\rexplicit: " + str(i) + "/" + str(nbrLine), end = "")
 		lineM = data["MATERIAL"][i]
@@ -109,13 +110,23 @@ def populateDataset(filename, newFilename, addProb, explicitVal, implicitVal, bu
 		if writeBufIfFull(newFilename, buf, bufSize):
 			buf = []
 	print("")
-	
-	for i in range(it):
-		print("\rit: "+str(i)+"/"+str(it), end = "")
+	nbrDone=0
+	userDone = set()
+	userZeros = {}
+	for u in usersId:
+		userZeros[u] = 0
+		
+	while nbrDone < nbrUser:
+		print("\rusers ready: "+str(nbrDone)+"/"+str(nbrUser), end = "")
 		for pair in generateValues(materialId, usersId):
-			if pair not in explicit:
-				explicit.add(pair)
-				buf.append(pair[1] + "," + pair[0] + "," + str(implicitVal)+ "\n")
+			if userZeros[pair[1]] != it and pair[1] not in userDone:
+				if pair not in explicit:
+					explicit.add(pair)
+					userZeros[pair[1]] += 1
+					buf.append(pair[1] + "," + pair[0] + "," + str(implicitVal)+ "\n")
+			else:
+				nbrDone += 1
+				userDone.add(pair[1])
 			
 				if writeBufIfFull(newFilename, buf, bufSize):
 					buf = []
@@ -147,7 +158,7 @@ if __name__ == "__main__":
 	#MC = getUniqueMC("CleanDatasets/no0s-unique-noBlanks-noNegatives.csv")
 	#writeToFile(MC["res"], MC["customers_id"], MC["materials_id"], "CleanDatasets/MCQ.csv")
 	#seeLines(2464070,2464090, "clean_test/data4project_global_cleaned.csv")
-	populateDataset("CleanDatasets/no_0s/binary_MC_global_no0s.csv", "CleanDatasets/no_0s/binary_MC_no0s_populated1000.csv", 0.001, 1.0, 0.0, 500000,1000)
+	populateDataset("CleanDatasets/no_0s/binary_MC_global_no0s.csv", "CleanDatasets/no_0s/binary_MC_no0s_populated400_exact.csv", 0.001, 1.0, 0.0, 500000,400)
 	
 	
 	
