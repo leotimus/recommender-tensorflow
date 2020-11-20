@@ -81,7 +81,7 @@ def calculate_average(chunk, total_so_far, average_so_far):
 
     return total_so_far, average_so_far
 
-def predict(user, item, user_matrix, item_matrix, user_bias_vector, item_bias_vector, global_bias):
+def predict(user, item, user_matrix, item_matrix, implicit_item_matrix, user_bias_vector, item_bias_vector, global_bias):
     item_vector = item_matrix[item, :]
     user_vector = user_matrix[user, :]
     item_bias = item_bias_vector[item]
@@ -89,7 +89,7 @@ def predict(user, item, user_matrix, item_matrix, user_bias_vector, item_bias_ve
 
     return user_bias + item_bias + global_bias + np.dot(item_vector, user_vector)
 
-def  fit_model(data_chunks, user_matrix, item_matrix, user_bias_vector, item_bias_vector, global_bias, user_ids, item_ids):
+def  fit_model(data_chunks, user_matrix, item_matrix, implicit_item_matrix, user_bias_vector, item_bias_vector, global_bias, user_ids, item_ids):
     number_of_chunks_to_eat = NUMBER_OF_CHUNKS_TO_EAT
 
     for chunk in data_chunks:
@@ -101,7 +101,7 @@ def  fit_model(data_chunks, user_matrix, item_matrix, user_bias_vector, item_bia
             item_vector = item_matrix[item, :]
             user_vector = user_matrix[user, :]
 
-            error = row[RATING_COLUMN] - predict(user, item, user_matrix, item_matrix, user_bias_vector, item_bias_vector, global_bias)
+            error = row[RATING_COLUMN] - predict(user, item, user_matrix, item_matrix, implicit_item_matrix, user_bias_vector, item_bias_vector, global_bias)
 
             item_vector = item_vector + LEARNING_RATE * (error * user_vector - REGULARIZATION * item_vector)
             user_vector = user_vector + LEARNING_RATE * (error * item_vector - REGULARIZATION * user_vector)
@@ -130,7 +130,7 @@ def  mean_generic_error(generic, data_chunks, user_matrix, item_matrix, user_bia
             user = user_ids[row[USER_ID_COLUMN]]
             item = item_ids[row[ITEM_ID_COLUMN]]
 
-            error = row[RATING_COLUMN] - predict(user, item, user_matrix, item_matrix, user_bias_vector, item_bias_vector, global_bias)
+            error = row[RATING_COLUMN] - predict(user, item, user_matrix, item_matrix, implicit_item_matrix, user_bias_vector, item_bias_vector, global_bias)
             
             accumulator += generic(error)
             count += 1
@@ -198,6 +198,7 @@ if __name__ == "__main__":
     
     user_matrix = np.random.random((number_of_users, NUMBER_OF_FACTORS))
     item_matrix = np.random.random((number_of_items, NUMBER_OF_FACTORS))
+    implicit_item_matrix = np.random.random((number_of_items, NUMBER_OF_FACTORS))
     user_bias_vector = np.zeros(number_of_users)
     item_bias_vector = np.zeros(number_of_items)
 
@@ -205,7 +206,7 @@ if __name__ == "__main__":
 
     for i in range(0,  EPOCHS):
         data_chunks = read_csv()
-        fit_model(data_chunks, user_matrix, item_matrix, user_bias_vector, item_bias_vector, global_bias, user_ids, item_ids)
+        fit_model(data_chunks, user_matrix, item_matrix, implicit_item_matrix, user_bias_vector, item_bias_vector, global_bias, user_ids, item_ids)
 
         data_chunks = pd.read_csv(FILE_PATH, chunksize=CHUNK_SIZE)
 
