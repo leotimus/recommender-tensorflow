@@ -1,7 +1,6 @@
 import pandas as pd
 import random as rd
 from src.AAUfilename import *
-from getpass import getpass
 import smbclient as smbc
 
 
@@ -38,11 +37,11 @@ def movieLensData(ratedVal, unratedVal, zeroProb):
 	
 	return {"ratings":ratings, "nbrUser":nbrUser, "nbrMovie":nbrMovie, "realRat":realRat, "moviesId":moviesId, "usersId":usersId}
 
-def gfData(filename):
+def gfData(filename, username, psw):
 	#cols = ['CUSTOMER_ID', 'MATERIAL', 'is_real']
 	cols = ['CUSTOMER_ID', 'MATERIAL']
 	#with smbc.open_file(getAAUfilename(r"CleanDatasets\no_0s\binary_MC_no0s_populated1000.csv"), mode="r", username=input("username: "), password=getpass()) as f:
-	with smbc.open_file(getAAUfilename(filename), mode="r", username=input("username: "), password=getpass()) as f:
+	with smbc.open_file(getAAUfilename(filename), mode="r", username=username, password=psw) as f:
 		data = pd.read_csv(f, names = cols, dtype = {"MATERIAL":str, "CUSTOMER_ID": str})
 	data.drop(data.index[:1], inplace=True)
 	#data["is_real"] = data["is_real"].apply(lambda x: float(x))
