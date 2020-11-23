@@ -15,7 +15,7 @@ def topKRatings(k, model, usersId, itemsId, mtype=None):
 		else:
 			for i in itemsId:
 				ratings.append((model.predict([pd.array([u]), pd.array([i])])), i)
-		ratings.sort(reverse=True, key = (lambda x: x[0]))
+		ratings.sort(reverse=True, key=(lambda x: x[0]))
 		topK.append((u, ratings[:k]))
 		count += 1
 	print("")
