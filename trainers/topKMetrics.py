@@ -5,11 +5,12 @@ def topKRatings(k, model, usersId, itemsId, mtype=None):
 	topK = []
 	isTwoTower = mtype == "two tower"
 	count = 1
+	itemslst = [i for i in itemsId]
 	for u in usersId:
 		print("\rComputing top"+str(k)+": "+str(count)+"/"+str(len(usersId)), end="")
 		ratings = []
 		if isTwoTower:
-			candidate = pd.DataFrame({"CUSTOMER_ID":[u for i in range(len(itemsId))], "MATERIAL":[i for i in itemsId]})
+			candidate = pd.DataFrame({"CUSTOMER_ID":[u for i in range(len(itemsId))], "MATERIAL":itemslst})
 			ratings = list(model.predict(tf.data.Dataset.from_tensor_slices(dict(candidate)).batch(len(itemsId))))
 			ratings = [(ratings[i], itemsId[i]) for i in range(len(itemsId))]
 		else:
