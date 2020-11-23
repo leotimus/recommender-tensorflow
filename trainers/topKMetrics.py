@@ -2,7 +2,7 @@ import pandas as pd
 import tensorflow as tf
 
 def topKRatings(k, model, usersId, itemsId, mtype=None):
-	topK = {}
+	topK = []
 	isTwoTower = mtype == "two tower"
 	count = 1
 	for u in usersId:
@@ -16,7 +16,7 @@ def topKRatings(k, model, usersId, itemsId, mtype=None):
 			for i in itemsId:
 				ratings.append((model.predict([pd.array([u]), pd.array([i])])), i)
 		ratings.sort(reverse=True, key = (lambda x: x[0]))
-		topK[u] = ratings[:k]
+		topK.append(u, ratings[:k])
 		count += 1
 	print("")
 	return topK
@@ -30,8 +30,8 @@ def topKMetrics(predictions, positives, usersId, itemsId):
 	
 	tp = 0
 	fp = 0
-	for u in predictions:
-		for r, i in predictions[u]:
+	for u, topk in predictions:
+		for r, i in topk:
 			if (u,i) in real:
 				tp += 1
 			else:
