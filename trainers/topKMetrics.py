@@ -31,7 +31,6 @@ def topKMetrics(predictions, positives, usersId, itemsId):
 	
 	tp = 0
 	fp = 0
-	print(predictions[0])
 	for u, topk in predictions:
 		for r, i in topk:
 			if (u,i) in real:
