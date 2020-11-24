@@ -1,6 +1,7 @@
 import pandas as pd
 from src.AAUfilename import *
 import random as rd
+import numpy as np
 
 COLUMNS_NAME = ["DOC_NUMBER_TEXT","CALDAY","MATERIAL","MATERIAL_TEXT","MATL_GROUP","QUANTITY","is_accessory","CUSTOMER_ID"]
 
@@ -71,7 +72,14 @@ def writeBufIfFull(filename, buf, bufSize):
 		return True
 	return False
 
-def populateDataset(filename, newFilename, addProb, explicitVal, implicitVal, bufSize):
+def generateValues(materialId, userId):
+	np.random.shuffle(materialId)
+	res = []
+	for i in range(len(userId)):
+		res.append((materialId[i], userId[i]))
+	return res
+
+def populateDataset(filename, newFilename, addProb, explicitVal, implicitVal, bufSize, it=0):
 	filename = getAAUfilename(filename)
 	newFilename = getAAUfilename(newFilename)
 	
@@ -86,7 +94,7 @@ def populateDataset(filename, newFilename, addProb, explicitVal, implicitVal, bu
 	#data["is_real"] = [float(explicitVal) for i in range(len(data["MATERIAL"]))]
 	
 	with open(newFilename, "w") as f:
-		f.write("CUSTOMER_ID, MATERIAL, is_real")
+		f.write("CUSTOMER_ID, MATERIAL, is_real\n")
 	
 	buf = []
 	#create a set containing the existing pairs
@@ -100,16 +108,28 @@ def populateDataset(filename, newFilename, addProb, explicitVal, implicitVal, bu
 		buf.append(lineC + "," + lineM + "," + str(explicitVal)+ "\n")
 		if writeBufIfFull(newFilename, buf, bufSize):
 			buf = []
+	print("")
+	
+	for i in range(it):
+		print("\rit: "+str(i)+"/"+str(it), end = "")
+		for pair in generateValues(materialId, usersId):
+			if pair not in explicit:
+				explicit.add(pair)
+				buf.append(pair[1] + "," + pair[0] + "," + str(implicitVal)+ "\n")
 			
-		
-		
+				if writeBufIfFull(newFilename, buf, bufSize):
+					buf = []
+			
+	print("")
+	writeBufIfFull(newFilename, buf, 1)
 	
 	#populate with implicit values
-	i = 0
+	"""i = 0
 	bigNumber = 1000000
 	for user in usersId:
-		print("\rimplicit: "+str(i)+"/"+str(nbrMaterial*nbrUser), end = "")
+		
 		for material in materialId:
+			print("\rimplicit: "+str(i)+"/"+str(nbrMaterial*nbrUser), end = "")
 			if ((user, material) not in explicit) and rd.randint(0,bigNumber) <= bigNumber*addProb:
 				buf.append(user + "," + material + "," + str(implicitVal)+ "\n")
 			
@@ -117,13 +137,17 @@ def populateDataset(filename, newFilename, addProb, explicitVal, implicitVal, bu
 				buf = []
 			i += 1
 	
-	writeBufIfFull(newFilename, buf, 1)
+	writeBufIfFull(newFilename, buf, 1)"""
+	
+	
+	
+	
 				
 if __name__ == "__main__":
 	#MC = getUniqueMC("CleanDatasets/no0s-unique-noBlanks-noNegatives.csv")
 	#writeToFile(MC["res"], MC["customers_id"], MC["materials_id"], "CleanDatasets/MCQ.csv")
 	#seeLines(2464070,2464090, "clean_test/data4project_global_cleaned.csv")
-	populateDataset("CleanDatasets/no_0s/binary_MC_global_no0s.csv", "CleanDatasets/no_0s/binary_MC_no0s_populated00001.csv", 0.00001, 1.0, 0.0, 10000)
+	populateDataset("CleanDatasets/no_0s/binary_MC_global_no0s.csv", "CleanDatasets/no_0s/binary_MC_no0s_populated1000.csv", 0.001, 1.0, 0.0, 500000,1000)
 	
 	
 	
