@@ -1,11 +1,23 @@
 import pandas as pd
 import tensorflow as tf
+from multiprocessing import Pool
+
+# To do parallelism using multiprocessing, lambda functions aren't allowed
+# and I can't find an easy way to accept multiple arguments, so the other 
+# two just go in global variables.  ~ asg h
+__currentModel = None
+__currentUserId = None
+def __predictForCurrentUser(i):
+	return (__currentModel.predict([pd.array([__currentUserId]), pd.array([i])]), i)
 
 def topKRatings(k, model, usersId, itemsId, mtype=None):
+	global __currentModel
+	global __currentUserId
 	topK = []
 	isTwoTower = mtype == "two tower"
 	count = 1
 	itemslst = [i for i in itemsId]
+	__currentModel = model
 	for u in usersId:
 		print("\rComputing top"+str(k)+": "+str(count)+"/"+str(len(usersId)), end="")
 		ratings = []
@@ -14,8 +26,9 @@ def topKRatings(k, model, usersId, itemsId, mtype=None):
 			ratings = list(model.predict(tf.data.Dataset.from_tensor_slices(dict(candidate)).batch(len(itemsId))))
 			ratings = [(ratings[i], itemsId[i]) for i in range(len(itemsId))]
 		else:
-			for i in itemsId:
-				ratings.append((model.predict([pd.array([u]), pd.array([i])]), i))
+			__currentUserId = u
+			with Pool() as p:
+				ratings = p.map(__predictForCurrentUser, itemsId)
 		ratings.sort(reverse=True, key=(lambda x: x[0]))
 		topK.append((u, ratings[:k]))
 		count += 1
