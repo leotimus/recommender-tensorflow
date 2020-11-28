@@ -19,14 +19,14 @@ def topKRatings(k, model, usersId, itemsId, mtype=None):
 	global __currentUserId
 	global var
 	topK = []
-	isTwoTower = mtype == "two tower"
+	isNFC = mtype == "NFC"
 	count = 1
 	itemslst = [i for i in itemsId]
 	var["__currentModel"] = model
 	for u in usersId:
 		print("\rComputing top"+str(k)+": "+str(count)+"/"+str(len(usersId)), end="")
 		ratings = []
-		if isTwoTower:
+		if isNFC:
 			candidate = pd.DataFrame({"CUSTOMER_ID":[u for i in range(len(itemsId))], "MATERIAL":itemslst})
 			ratings = list(model.predict(tf.data.Dataset.from_tensor_slices(dict(candidate)).batch(len(itemsId))))
 			ratings = [(ratings[i], itemsId[i]) for i in range(len(itemsId))]
@@ -36,11 +36,7 @@ def topKRatings(k, model, usersId, itemsId, mtype=None):
 				ratings.append( __predictForCurrentUser(item))
 		#	with Pool() as p:
 		#		ratings = p.map(__predictForCurrentUser, itemsId)
-		sort_time = time.time()
-		ratings.sort(reverse=True, key=(lambda x: x[0]))
-		print(time.time() - sort_time)
-		#
-		topK.append((u, ratings[:k]))
+		topK.append((u, __topk(ratings, k)))
 		count += 1
 	print("")
 	return topK
@@ -50,6 +46,29 @@ def __predictForCurrentUser(i):
 	global var
 #	print([__currentUserId], [i])
 	return (var["__currentModel"].predict([np.array([var["__currentUserId"]]), np.array([i])]), i)
+
+def __topk(l,k):
+	res = []
+	for i in range(k):
+		res.append(l[i])
+		
+	res.sort(reverse=True, key=(lambda x: x[0]))
+	
+	for i in range(k, len(l)):
+		if l[i][0] > res[-1][0]:
+			res.pop()
+			__insertSorted(res, l[i])
+	
+	return res
+
+def __insertSorted(l, val):
+	i = len(l)
+	current = l[-1][0]
+	while i > 0 and current < val[0]:
+		i -= 1
+		current = l[i-1][0]
+		
+	l.insert(i,val)
 
 def topKMetrics(predictions, positives, usersId, itemsId):
 	nbrUser = len(usersId)
