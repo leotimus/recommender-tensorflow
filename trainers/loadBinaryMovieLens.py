@@ -47,7 +47,7 @@ def gfData(filename, username, psw, rdZero = False):
 		data = pd.read_csv(f, names = cols, dtype = {"MATERIAL":str, "CUSTOMER_ID": str})
 	data.drop(data.index[:1], inplace=True)
 	if rdZero:
-		data.drop(columns = ["NORMALIZED_CUSTOMER_ID", "PRODUCT_ID"])
+		data.drop(columns = ["NORMALIZED_CUSTOMER_ID", "PRODUCT_ID"], inplace=True)
 		data["RATING_TYPE"] = data["RATING_TYPE"].apply(lambda x: float(x))
 	
 	#ratings["MATERIAL"] = ratings["MATERIAL"].apply(lambda x : str(x))
