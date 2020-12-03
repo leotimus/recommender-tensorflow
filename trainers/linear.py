@@ -48,7 +48,7 @@ def trainAndEvaluate(args):
 
 if __name__ == '__main__':
   parser = ArgumentParser()
-  parser.add_argument("--train-csv", default="data/ml-100k/train.csv",
+  parser.add_argument("--train-csv", default="\\\\cs.aau.dk\\Fileshares\\IT703e20\\data4project_global.csv",
                       help="path to the training csv data (default: %(default)s)")
   parser.add_argument("--test-csv", default="data/ml-100k/test.csv",
                       help="path to the test csv data (default: %(default)s)")

@@ -16,8 +16,8 @@ DEFAULTS = [[0], [0], [0], [0], ["null"], [0], [0], [0], [0], [0],
 
 
 def getFeatureColumns(embeddingSize=4):
-  userFc = tf.feature_column.categorical_column_with_hash_bucket("user_id", 1000, tf.int32)
-  itemFc = tf.feature_column.categorical_column_with_hash_bucket("item_id", 2000, tf.int32)
+  userFc = tf.feature_column.categorical_column_with_hash_bucket("CUSTOMER_ID", 1000, tf.int32)
+  itemFc = tf.feature_column.categorical_column_with_hash_bucket("MATERIAL", 2000, tf.int32)
 
   # user features
   ageFc = tf.feature_column.numeric_column("age")
