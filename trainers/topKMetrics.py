@@ -54,3 +54,14 @@ def topKMetrics(predictions, positives, usersId, itemsId):
 	tn = total - tp - fp - fn
 	
 	return{"tp":tp, "tn":tn, "fp":fp, "fn":fn, "precision":tp/(tp+fp), "recall": tp/(tp+fn)}
+
+def getAverage(results):
+	average = {}
+
+	for key in results[0]:
+		average[key] = 0
+		for result in results:
+			average[key] += result[key]
+		average[key] /= len(results)
+	
+	return average
