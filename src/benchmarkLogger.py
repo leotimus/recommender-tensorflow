@@ -4,12 +4,11 @@ import psutil
 import csv
 
 class benchThread (threading.Thread):
-   def __init__(self, pollTime, active, filepath, memIdleMB):
+   def __init__(self, pollTime, active, filepath):
       threading.Thread.__init__(self)
       self.pollTime = pollTime
       self.active = active
       self.filepath = filepath
-      self.memIdleMB = memIdleMB
       self.daemon = True #useful to exit the logger when the main thread crashes  or is interrupted
 
    def run(self):
@@ -20,15 +19,15 @@ class benchThread (threading.Thread):
          writer.writerow(["Time", "CPU %", "Memory"])
       while self.active:
          timeCounter += self.pollTime
-         log_stats(self.pollTime, timeCounter, self.filepath, self.memIdleMB)
+         log_stats(self.pollTime, timeCounter, self.filepath)
       print ("Exiting " + self.name)
 
-def log_stats(pollTime, timeCounter, filepath, memIdleMB):
+def log_stats(pollTime, timeCounter, filepath):
    time.sleep(pollTime)
    #print ("%s %.2f" % (psutil.cpu_percent(), psutil.virtual_memory().used/(1024**2)))
    with open(filepath, 'a', newline='') as file:
       writer = csv.writer(file)
-      writer.writerow([timeCounter, psutil.cpu_percent(), round(psutil.virtual_memory().used/(1024**2)) - memIdleMB])
+      writer.writerow([timeCounter, psutil.cpu_percent(), round(psutil.Process().memory_info().rss / (1024**2))])
 
 
 # Create new threads
