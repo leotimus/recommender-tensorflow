@@ -4,28 +4,31 @@ import psutil
 import csv
 
 class benchThread (threading.Thread):
-   def __init__(self, pollTime, active):
+   def __init__(self, pollTime, active, filepath, memIdleMB):
       threading.Thread.__init__(self)
       self.pollTime = pollTime
       self.active = active
+      self.filepath = filepath
+      self.memIdleMB = memIdleMB
+      self.daemon = True #useful to exit the logger when the main thread crashes  or is interrupted
 
    def run(self):
       timeCounter = 0
       print ("Starting " + self.name)
-      with open('innovators.csv', 'w+', newline='') as file:
+      with open(self.filepath, 'w+', newline='') as file:
          writer = csv.writer(file)
          writer.writerow(["Time", "CPU %", "Memory"])
       while self.active:
          timeCounter += self.pollTime
-         print_time(self.name, self.pollTime, timeCounter)
+         log_stats(self.pollTime, timeCounter, self.filepath, self.memIdleMB)
       print ("Exiting " + self.name)
 
-def print_time(threadName, pollTime, timeCounter):
+def log_stats(pollTime, timeCounter, filepath, memIdleMB):
    time.sleep(pollTime)
-   #print ("%s: %s %.2f" % (threadName, psutil.cpu_percent(), psutil.virtual_memory().used/(1024**2)))
-   with open('innovators.csv', 'a', newline='') as file:
+   #print ("%s %.2f" % (psutil.cpu_percent(), psutil.virtual_memory().used/(1024**2)))
+   with open(filepath, 'a', newline='') as file:
       writer = csv.writer(file)
-      writer.writerow([timeCounter, psutil.cpu_percent(), psutil.virtual_memory().used/(1024**2)])
+      writer.writerow([timeCounter, psutil.cpu_percent(), round(psutil.virtual_memory().used/(1024**2)) - memIdleMB])
 
 
 # Create new threads
