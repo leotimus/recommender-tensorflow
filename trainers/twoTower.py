@@ -1,5 +1,7 @@
 import tensorflow as tf
 import pandas as pd
+
+from src.benchmarkLogger import benchThread
 from trainers.model_utils import getOptimizer
 import time
 from trainers.loadBinaryMovieLens import *
@@ -7,6 +9,11 @@ from trainers.topKMetrics import *
 import tensorflow_recommenders as tfrs
 import sys
 from getpass import getpass
+import psutil
+import os
+
+#os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 
 class TwoTowerModel(tf.keras.Model):
 	def __init__(self, embedDim, nbrItem, nbrUser, userKey, itemKey, usersId, itemsId, eval_batch_size = 8000, loss = None, rdZero = False, resKey = None):
@@ -21,7 +28,7 @@ class TwoTowerModel(tf.keras.Model):
 		self.eval_batch_size = eval_batch_size
 		self.rdZero = rdZero
 		#print(nbrItem)
-		
+
 		self.userTowerIn = tf.keras.layers.experimental.preprocessing.StringLookup(vocabulary = usersId)
 		self.userTowerOut = tf.keras.layers.Embedding(nbrUser+2, embedDim)
 		self.itemTowerIn = tf.keras.layers.experimental.preprocessing.StringLookup(vocabulary = itemsId)
@@ -217,6 +224,8 @@ def crossValidation(filenames, k, learningRate, optimiser, loss, epoch, embNum, 
 
 
 if __name__ == "__main__":
+	bmThread = benchThread(1,1,'TopK100kNice.csv') #create the thread
+	bmThread.start() #and start it
 	print(sys.argv)
 	learningRate = 0.1
 	optimiser = "Adagrad"
@@ -265,6 +274,8 @@ if __name__ == "__main__":
 	with open("../result/twoTowerResult", "a") as f:
 		f.write("k: " + str(k) + ", learning rate: " + str(learningRate) + ", optimiser: " + optimiser + ", splitRatio: " + str(splitRatio) + ", loss: " + str(loss) + ", filename: " + str(filename) + ", use randomly added zeros: " + str(randomZero) + ", randomly added zeros filename: " + str(rdZeroFilename) + ", epoch: " + str(epoch) + ", nbr embedings: " + str(embNum) + ", batchSize: " + str(batchSize) + "\n")
 		f.write(str(res) + "\n")
+	bmThread.join()  # wait for it to exit on its own, since its daemon as a precaution
+	bmThread.active = 0 #deactivate the thread, will exit on the next while loop cycle
 	print("Done",flush=True)
 
 
