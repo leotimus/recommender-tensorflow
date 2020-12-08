@@ -26,17 +26,18 @@ def topKRatings(k, model, usersId, itemsId, mtype=None):
 	for u in usersId:
 		print("\rComputing top"+str(k)+": "+str(count)+"/"+str(len(usersId)), end="")
 		ratings = []
+		newratings = []
 		if isNFC:
-			candidate = pd.DataFrame({"CUSTOMER_ID":[u for i in range(len(itemsId))], "MATERIAL":itemslst})
+			candidate = pd.DataFrame({"customer-input":[u for i in range(len(itemsId))], "material-input":itemslst})
 			ratings = list(model.predict(tf.data.Dataset.from_tensor_slices(dict(candidate)).batch(len(itemsId))))
-			ratings = [(ratings[i], itemsId[i]) for i in range(len(itemsId))]
+			newratings = [(ratings[i], itemsId[i]) for i in range(len(itemsId))]
 		else:
 			var["__currentUserId"] = u
 			for item in itemsId:
 				ratings.append( __predictForCurrentUser(item))
 		#	with Pool() as p:
 		#		ratings = p.map(__predictForCurrentUser, itemsId)
-		topK.append((u, __topk(ratings, k)))
+		topK.append((u, __topk(newratings, k)))
 		count += 1
 	print("")
 	return topK
@@ -77,15 +78,22 @@ def topKMetrics(predictions, positives, usersId, itemsId):
 	
 	real = set(positives)
 	
+
 	tp = 0
 	fp = 0
+	hits = 0	
 	for u, topk in predictions:
-		for r, i in topk:
+		hit = False
+		for r, i in topk:			
 			if (u,i) in real:
 				tp += 1
+				hit = True
 			else:
 				fp += 1
+		if(hit):
+			hits+=1
+#			print("hit by user: ",u)
 	fn = len(real) - tp
 	tn = total - tp - fp - fn
-	
-	return{"tp":tp, "tn":tn, "fp":fp, "fn":fn, "precision":tp/(tp+fp), "recall": tp/(tp+fn)}
+	hitRate =  hits/nbrUser
+	return{"tp":tp, "tn":tn, "fp":fp, "fn":fn, "precision":tp/(tp+fp), "recall": tp/(tp+fn), "hitRate": hitRate}
