@@ -1,6 +1,7 @@
 import pandas as pd
 import random as rd
 from src.AAUfilename import *
+from getpass import getpass
 import smbclient as smbc
 
 
@@ -37,18 +38,12 @@ def movieLensData(ratedVal, unratedVal, zeroProb):
 	
 	return {"ratings":ratings, "nbrUser":nbrUser, "nbrMovie":nbrMovie, "realRat":realRat, "moviesId":moviesId, "usersId":usersId}
 
-def gfData(filename, username, psw, rdZero = False):
-	if rdZero:
-		cols = ["CUSTOMER_ID", "NORMALIZED_CUSTOMER_ID", "MATERIAL", "PRODUCT_ID", "RATING_TYPE"]
-	else:
-		cols = ['CUSTOMER_ID', 'MATERIAL']
-	#with smbc.open_file(getAAUfilename(r"CleanDatasets\no_0s\binary_MC_no0s_populated1000.csv"), mode="r", username=input("username: "), password=getpass()) as f:
-	with smbc.open_file(getAAUfilename(filename), mode="r", username=username, password=psw) as f:
+def gfData():
+	cols = ['CUSTOMER_ID', 'MATERIAL', 'is_real']
+	with smbc.open_file(getAAUfilename(r"CleanDatasets\no_0s\binary_MC_no0s_populated1000.csv"), mode="r", username=input("username: "), password=getpass()) as f:
 		data = pd.read_csv(f, names = cols, dtype = {"MATERIAL":str, "CUSTOMER_ID": str})
 	data.drop(data.index[:1], inplace=True)
-	if rdZero:
-		data.drop(columns = ["NORMALIZED_CUSTOMER_ID", "PRODUCT_ID"], inplace=True)
-		data["RATING_TYPE"] = data["RATING_TYPE"].apply(lambda x: float(x))
+	data["is_real"] = data["is_real"].apply(lambda x: float(x))
 	
 	#ratings["MATERIAL"] = ratings["MATERIAL"].apply(lambda x : str(x))
 	#ratings["CUSTOMER_ID"] = ratings["CUSTOMER_ID"].apply(lambda x : str(x))
@@ -60,59 +55,3 @@ def gfData(filename, username, psw, rdZero = False):
 	
 	return {"ratings":data, "nbrUser":nbrUser, "nbrMaterial":nbrMaterial, "materialsId":materialId, "usersId":usersId}
 	
-	
-	
-	 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
