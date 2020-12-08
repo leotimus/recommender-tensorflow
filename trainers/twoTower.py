@@ -3,7 +3,7 @@ import pandas as pd
 from trainers.model_utils import getOptimizer
 import time
 from trainers.loadBinaryMovieLens import *
-from trainers.topKMetrics import *
+from trainers.topKmetrics import *
 import tensorflow_recommenders as tfrs
 import sys
 from getpass import getpass
@@ -222,10 +222,10 @@ if __name__ == "__main__":
 	optimiser = "Adagrad"
 	splitRatio = 0.8
 	loss = None
-	filename = [r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_5.csv"]
-	rdZeroFilename = [r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_1.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_2.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_3.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_4.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_5.csv"]
-	#filename = [r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_5.csv"]
-	#rdZeroFilename = [r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_1.csv", r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_2.csv", r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_3.csv", r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_4.csv", r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_5.csv"]
+	#filename = [r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_5.csv"]
+	#rdZeroFilename = [r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_1.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_2.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_3.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_4.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_5.csv"]
+	filename = [r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_5.csv"]
+	rdZeroFilename = [r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_1.csv", r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_2.csv", r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_3.csv", r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_4.csv", r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_5.csv"]
 	epoch = 3
 	embNum = 300
 	batchSize = 5000

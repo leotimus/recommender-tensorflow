@@ -97,3 +97,22 @@ def topKMetrics(predictions, positives, usersId, itemsId):
 	tn = total - tp - fp - fn
 	hitRate =  hits/nbrUser
 	return{"tp":tp, "tn":tn, "fp":fp, "fn":fn, "precision":tp/(tp+fp), "recall": tp/(tp+fn), "hitRate": hitRate}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

@@ -60,20 +60,3 @@ def gfData(filename, username, psw, rdZero = False):
 	nbrUser = len(usersId)
 	
 	return {"ratings":data, "nbrUser":nbrUser, "nbrMaterial":nbrMaterial, "materialsId":materialId, "usersId":usersId}
-
-def gfData():
-	cols = ['CUSTOMER_ID', 'MATERIAL', 'is_real']
-	with smbc.open_file(getAAUfilename(r"CleanDatasets\no_0s\binary_MC_no0s_populated1000.csv"), mode="r", username=input("username: "), password=getpass()) as f:
-		data = pd.read_csv(f, names = cols, dtype = {"MATERIAL":str, "CUSTOMER_ID": str})
-	data.drop(data.index[:1], inplace=True)
-	data["is_real"] = data["is_real"].apply(lambda x: float(x))
-	
-	#ratings["MATERIAL"] = ratings["MATERIAL"].apply(lambda x : str(x))
-	#ratings["CUSTOMER_ID"] = ratings["CUSTOMER_ID"].apply(lambda x : str(x))
-	
-	materialId = pd.unique(data["MATERIAL"])
-	nbrMaterial = len(materialId)
-	usersId = pd.unique(data["CUSTOMER_ID"])
-	nbrUser = len(usersId)
-	
-	return {"ratings":data, "nbrUser":nbrUser, "nbrMaterial":nbrMaterial, "materialsId":materialId, "usersId":usersId}
