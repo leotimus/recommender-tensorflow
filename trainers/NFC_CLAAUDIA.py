@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
-from src.AAUFile import *
+from src.benchmarkLogger import benchThread
 from getpass import getpass
 import smbclient as smbc
 import trainers.topKmetrics as trainerTop
@@ -25,23 +25,21 @@ print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('
 
 print ('Loading dataset..')
 
-with smbc.open_file((r"//cs.aau.dk/Fileshares/IT703e20/(NEW)CleanDatasets/NCF/100k/train.csv"), mode="r", username=input("username: "), password=getpass()) as f:
+smbc.ClientConfig(username='jpolas20@student.aau.dk', password='NMvcbchacsnL2022')
+
+with smbc.open_file((r"\\cs.aau.dk\Fileshares\IT703e20\(NEW)CleanDatasets\NCF\2m(OG)\train.csv"), mode="r") as f:
      train = pd.read_csv(f, header=0, names=['customer_id', 'normalized_customer_id', 'material', 'product_id', 'rating_type'])
 
-with smbc.open_file((r"//cs.aau.dk/Fileshares/IT703e20/(NEW)CleanDatasets/NCF/100k/test.csv"), mode="r", username=input("username: "), password=getpass()) as f:
+with smbc.open_file((r"\\cs.aau.dk\Fileshares\IT703e20\(NEW)CleanDatasets\NCF\2m(OG)\test.csv"), mode="r") as f:
      test = pd.read_csv(f, header=0, names=['customer_id', 'normalized_customer_id', 'material', 'product_id', 'rating_type'])
 
-with smbc.open_file((r"//cs.aau.dk/Fileshares/IT703e20/(NEW)CleanDatasets/NCF/100k/positives100k.csv"), mode="r", username=input("username: "), password=getpass()) as f:
-     allPositives = pd.read_csv(f, header=0, names=['id','customer_id', 'normalized_customer_id', 'material', 'product_id'], delimiter=";")
+with smbc.open_file((r"\\cs.aau.dk\Fileshares\IT703e20\(NEW)CleanDatasets\NCF\2m(OG)\positives2m.csv"), mode="r") as f:
+     allPositives = pd.read_csv(f, header=0, names=['id','customer_id', 'normalized_customer_id', 'material', 'product_id'])
 
-with smbc.open_file((r"//cs.aau.dk/Fileshares/IT703e20/(NEW)CleanDatasets/NCF/100k/positives_5th_split.csv"), mode="r", username=input("username: "), password=getpass()) as f:
-     positives_5th_split = pd.read_csv(f, header=0, names=['id','customer_id', 'normalized_customer_id', 'material', 'product_id'], delimiter=";")
+with smbc.open_file((r"\\cs.aau.dk\Fileshares\IT703e20\(NEW)CleanDatasets\NCF\2m(OG)\positives_5th_split.csv"), mode="r") as f:
+     positives_5th_split = pd.read_csv(f, header=0, names=['id','customer_id', 'normalized_customer_id', 'material', 'product_id'])
 
-#dataset = pd.read_csv('D:/ML/dataset/100kNew.csv', header=0, names=['customer_id', 'normalized_customer_id', 'material', 'product_id', 'rating_type'])
-#train = pd.read_csv('D:/ML/GrundfosData/NCF/100k/train.csv', header=0, names=['customer_id', 'normalized_customer_id', 'material', 'product_id', 'rating_type'])
-#test = pd.read_csv('D:/ML/GrundfosData/NCF/100k/test.csv', header=0, names=['customer_id', 'normalized_customer_id', 'material', 'product_id', 'rating_type'])
-#allPositives = pd.read_csv('D:/ML/GrundfosData/NCF/100k/positives100k.csv', header=0, names=['id','customer_id', 'normalized_customer_id', 'material', 'product_id'], delimiter=";")
-#positives_5th_split = pd.read_csv('D:/ML/GrundfosData/NCF/100k/positives_5th_split.csv', header=0, names=['id','customer_id', 'normalized_customer_id', 'material', 'product_id'], delimiter=";")
+
 print ('Dataset loaded')
 #frames = (train, test)
 mergeddata_datasets = train.append(test)
@@ -57,19 +55,24 @@ test.drop(columns=['customer_id','material'])
 allPositives.drop(columns=['customer_id','material'])
 positives_5th_split.drop(columns=['customer_id','material'])
 
-neptune.init(
-    api_token="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vdWkubmVwdHVuZS5haSIsImFwaV91cmwiOiJodHRwczovL3VpLm5lcHR1bmUuYWkiLCJhcGlfa2V5IjoiZmZhMDhiYjEtNTFmZC00NjlkLWE1MzAtMzBjYWZiMDQ0NDQ1In0=",
-    project_qualified_name="jitka7532/CS-project"
- )
+# neptune.init(
+#     api_token="",
+#     project_qualified_name=""
+#  )
 
-neptune.set_project('jitka7532/CS-project')
-neptune.create_experiment(name='100k')
+# neptune.set_project('jitka7532/CS-project')
+# neptune.create_experiment(name='100k')
 
 
-class NeptuneMonitor(keras.callbacks.Callback):
-    def on_epoch_end(self, epoch, logs=None):
-        for metric_name, metric_value in logs.items():
-            neptune.log_metric(metric_name, metric_value)
+# class NeptuneMonitor(keras.callbacks.Callback):
+#     def on_epoch_end(self, epoch, logs=None):
+#         for metric_name, metric_value in logs.items():
+#             neptune.log_metric(metric_name, metric_value)
+
+#comp resource benchmarking
+bmThread = benchThread(1,1,'2m_benchmarks.csv') #create the thread
+bmThread.start()
+
 
 #Build the model
 print ("Building model")
@@ -123,9 +126,9 @@ model.compile(optimizer, loss=tf.keras.losses.BinaryCrossentropy(), metrics=[tf.
 
 print ('Training model')
 
-history = model.fit([train.normalized_customer_id, train.product_id], train.rating_type, epochs=PARAMS['epoch_nr'], batch_size=PARAMS['batch_size'], shuffle=True, verbose=2, callbacks=[NeptuneMonitor()])
-#history = model.fit([train.normalized_customer_id, train.product_id], train.rating_type, epochs=PARAMS['epoch_nr'], batch_size=PARAMS['batch_size'], shuffle=True, verbose=2)
-model.save('D:/ML/GrundfosData/NCF_savedModels/100k/with0s')
+#history = model.fit([train.normalized_customer_id, train.product_id], train.rating_type, epochs=PARAMS['epoch_nr'], batch_size=PARAMS['batch_size'], shuffle=True, verbose=2, callbacks=[NeptuneMonitor()])
+history = model.fit([train.normalized_customer_id, train.product_id], train.rating_type, epochs=PARAMS['epoch_nr'], batch_size=PARAMS['batch_size'], shuffle=True, verbose=2)
+#model.save('D:/ML/GrundfosData/NCF_savedModels/100k/with0s')
 
 pd.Series(history.history['loss']).plot(logy=True)
 plt.xlabel("Epoch")
@@ -137,6 +140,10 @@ y_hat = np.round(model.predict([test.normalized_customer_id, test.product_id], v
 y_true = test.rating_type
 mean_absolute_error(y_true, y_hat)
 print ('Predict model...Done')
+
+bmThread.active = 0 #deactivate the thread, will exit on the next while loop cycle
+bmThread.join()  # wait for it to exit on its own, since its daemon as a precaution
+print("Done",flush=True)
 
 print ('Evaluate model')
 model.evaluate([test.normalized_customer_id, test.product_id], test.rating_type, verbose=2)
