@@ -11,9 +11,9 @@ from src.AAUfilename import getAAUfilename
 from getpass import getpass
 from src.benchmarkLogger import benchThread
 
-EPOCHS = 1
+EPOCHS = 10
 LEARNING_RATE = 0.01
-REGULARIZATION = 0.1
+REGULARIZATION = 0.7
 NUMBER_OF_FACTORS = 200
 
 TOPK_BATCH_SIZE = 5000
@@ -21,7 +21,7 @@ EPOCH_ERROR_CALCULATION_FREQUENCY = 100
 VERBOSE = True
 PRINT_EVERY = 1351 # Get more random-looking numbers
 
-GRUNDFOS = False
+GRUNDFOS = True
 EVALUATE = False
 
 # The data is expected in chunks, either in separate files or in a single
