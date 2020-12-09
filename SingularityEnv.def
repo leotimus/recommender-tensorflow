@@ -26,6 +26,7 @@ IncludeCmd: yes
 	pip3 install graphviz
 	pip3 install smbprotocol
 	pip3 install tensorflow_recommenders
+	pip3 install cudnnenv
 	apt-get install -y cifs-utils
 
 

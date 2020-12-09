@@ -161,4 +161,4 @@ res= []
 topk = trainerTop.topKRatings(10, model, unique_customers, unique_products, mtype="NFC")
 
 res.append(trainerTop.topKMetrics(topk, [(positives_5th_split.normalized_customer_id[i], positives_5th_split.product_id[i]) for i in positives_5th_split.id], unique_customers, unique_products))
-print(res[-1])
+print(res[-1], flush=True)
