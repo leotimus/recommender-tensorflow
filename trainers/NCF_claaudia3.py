@@ -56,7 +56,7 @@ test.drop(columns=['customer_id','material'])
 
 
 #comp resource benchmarking
-bmThread = benchThread(1,1,'100k_benchmarks.csv') #create the thread
+bmThread = benchThread(1,1,'500k_benchmarks.csv') #create the thread
 bmThread.start()
 
 
