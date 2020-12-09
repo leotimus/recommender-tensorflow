@@ -1,0 +1,49 @@
+Bootstrap: docker
+From: nvidia/tensorflow:20.10-tf2-py3
+Registry: nvcr.io
+IncludeCmd: yes
+
+%setup
+
+%files
+
+%environment
+
+%post
+	apt-get update
+	pip3 install pandas
+	pip3 install numpy
+	pip3 install google-api-core==1.23.0
+	pip3 install google-auth==1.22.1
+	pip3 install google-cloud-bigquery==2.2.0
+	pip3 install dask[dataframe]==2.30.0
+	pip3 install requests
+	pip3 install scikit-learn==0.23.2
+	pip3 install matplotlib==3.3.2
+	pip3 install IPython==7.16.1
+	pip3 install altair==4.1.0
+	pip3 install pydot
+	pip3 install graphviz
+	pip3 install smbprotocol
+	pip3 install tensorflow_recommenders
+	apt-get install -y cifs-utils
+
+
+%runscript
+
+%startscript
+
+%test
+	python3 --version
+#	pip3 list | grep tensorflow
+#	pip3 list | grep pandas
+#	pip3 list | grep numpy
+
+%labels
+	Author "Who cares"
+	Version v0.0.0
+
+%help
+	RTFM
+
+
