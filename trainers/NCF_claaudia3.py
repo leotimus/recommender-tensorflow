@@ -27,10 +27,10 @@ print ('Loading dataset..')
 
 smbc.ClientConfig(username='jpolas20@student.aau.dk', password='NMvcbchacsnL2022')
 
-with smbc.open_file((r"\\cs.aau.dk\Fileshares\IT703e20\(NEW)CleanDatasets\NCF\100k\train.csv"), mode="r") as f:
+with smbc.open_file((r"\\cs.aau.dk\Fileshares\IT703e20\(NEW)CleanDatasets\NCF\500k\train.csv"), mode="r") as f:
      train = pd.read_csv(f, header=0, names=['customer_id', 'normalized_customer_id', 'material', 'product_id', 'rating_type'])
 
-with smbc.open_file((r"\\cs.aau.dk\Fileshares\IT703e20\(NEW)CleanDatasets\NCF\100k\test.csv"), mode="r") as f:
+with smbc.open_file((r"\\cs.aau.dk\Fileshares\IT703e20\(NEW)CleanDatasets\NCF\500k\test.csv"), mode="r") as f:
      test = pd.read_csv(f, header=0, names=['customer_id', 'normalized_customer_id', 'material', 'product_id', 'rating_type'])
 
 # with smbc.open_file((r"\\cs.aau.dk\Fileshares\IT703e20\(NEW)CleanDatasets\NCF\100k\positives100k.csv"), mode="r") as f:
@@ -82,7 +82,7 @@ customer_embedding_mf = Embedding(num_customers + 1, latent_dim, name='customer-
 customer_vec_mf = Flatten(name='flatten-customer-mf')(customer_embedding_mf)
 
 PARAMS = {'epoch_nr': 20,
-          'batch_size': 50000,
+          'batch_size': 10000,
           'lr': 0.001,
           'momentum': 0.4,
           'unit_nr1': 100,
