@@ -24,7 +24,7 @@ def topKRatings(k, model, usersId, itemsId, mtype=None):
 	itemslst = [i for i in itemsId]
 	var["__currentModel"] = model
 	for u in usersId:
-		print("\rComputing top"+str(k)+": "+str(count)+"/"+str(len(usersId)), end="", flush=True)
+		print("\rComputing top"+str(k)+": "+str(count)+"/"+str(len(usersId)), end="")
 		ratings = []
 		newratings = []
 		if isNFC:
