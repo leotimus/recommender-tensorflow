@@ -4,8 +4,8 @@ import keras
 import keras.utils
 import tensorflow as tf
 import time
-import os
-import neptune
+#import os
+# import neptune
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.layers import *
 import matplotlib.pyplot as plt
@@ -13,7 +13,7 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from src.benchmarkLogger import benchThread
-from getpass import getpass
+#from getpass import getpass
 import smbclient as smbc
 import trainers.topKmetrics as trainerTop
 #from trainers.topKmetrics import topKMetrics
