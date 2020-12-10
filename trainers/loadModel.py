@@ -17,7 +17,7 @@ import trainers.topKmetrics as trainerTop
 
 if __name__ == "__main__":
     
-    reconstructed_model = keras.models.load_model('//cs.aau.dk/Fileshares/IT703e20/NCF_savedModels/2m')
+    reconstructed_model = keras.models.load_model('src/data/2m')
 
     print ('Loading dataset..')
 
