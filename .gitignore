@@ -23,4 +23,6 @@ trainers/NFC_plain.py
 
 .vscode/
 
-TopK100kNice.csv
+svd-benchmark.csv
+
+svd-benchmark.csv.graph.png
