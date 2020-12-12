@@ -27,6 +27,7 @@ IncludeCmd: yes
 	pip3 install smbprotocol
 	pip3 install tensorflow_recommenders
 	pip3 install gitpython
+	pip3 install GPUtil
 	apt-get install -y cifs-utils
 
 
