@@ -4,6 +4,7 @@ import pandas as pd
 from src.benchmarkLogger import benchThread
 from trainers.model_utils import getOptimizer
 import time
+from datetime import datetime
 from trainers.loadBinaryMovieLens import *
 from trainers.topKmetrics import *
 import tensorflow_recommenders as tfrs
@@ -122,7 +123,7 @@ def splitTrainTest(data, ratio):
 	
 
 def crossValidation(filenames, k, learningRate, optimiser, loss, epoch, embNum, batchSize, randomZero = False, rdZeroFilenames = None, testBatchSize = 5000, semb = 64, bname = "../result/100kBenchmark"):
-	if not os.path.isdir("../result/100kBenchmark"):
+	if not os.path.isdir(bname):
 		os.mkdir(bname)
 	#Load the files for cross-validation.
 	dataSets = []
@@ -183,7 +184,7 @@ def crossValidation(filenames, k, learningRate, optimiser, loss, epoch, embNum, 
 		
 		#starting benchmark
 		print("Create benchmark thread", flush=True)
-		bmThread = benchThread(1,1,bname+"/it"+str(i))
+		bmThread = benchThread(0.1,1,bname+"/it"+str(i)+"_"+datetime.now().strftime("%d_%H_%M_%S"))
 		print("Done", flush=True)
 		bmThread.start()
 		
@@ -259,7 +260,7 @@ if __name__ == "__main__":
 	testBatchSize = 5000
 	k = 10
 	randomZero = False
-	bname = "../result/100kBenchmark"
+	bname = "../result/benchmarking-project-ma1/100kBenchmark"
 	for i in range(len(sys.argv)):
 		if sys.argv[i] == "data":
 			filename = sys.argv[i+1]
@@ -277,6 +278,8 @@ if __name__ == "__main__":
 			optimiser = sys.argv[i+1]
 		elif sys.argv[i] == "randomZero":
 			randomZero = True
+		elif sys.argv[i] == "bname":
+			bname = "../result/benchmarking-project-ma1/"+sys.argv[i+1]
 	
 	res = crossValidation(
 		filename, 
