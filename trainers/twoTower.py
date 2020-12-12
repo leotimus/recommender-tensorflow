@@ -224,14 +224,16 @@ def crossValidation(filenames, k, learningRate, optimiser, loss, epoch, embNum, 
 		#print(topk.numpy())
 		res.append(topKMetrics(topk, [(str(i["CUSTOMER_ID"].numpy()), str(i["MATERIAL"].numpy())) for i in testSet], usersId, matId))
 		
+		print("Metrics:",res[-1],flush=True)
+		
 		#making ready for next it
 		dataSets.append(testData)
+		
 		if randomZero:
 			fullRes.append(topKMetrics(topk, [(str(i["CUSTOMER_ID"].numpy()), str(i["MATERIAL"].numpy())) for i in tf.data.Dataset.from_tensor_slices(dict(pd.concat(testDataSets, ignore_index=True)))], usersId, matId))
 		else:
 			fullRes.append(topKMetrics(topk, [(str(i["CUSTOMER_ID"].numpy()), str(i["MATERIAL"].numpy())) for i in tf.data.Dataset.from_tensor_slices(dict(pd.concat(dataSets, ignore_index=True)))], usersId, matId))
-			
-		print("Metrics:",res[-1],flush=True)
+		
 		print("Full dataset metrics:",fullRes[-1],flush=True)
 	
 	#computing average results
