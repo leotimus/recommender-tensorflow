@@ -161,6 +161,7 @@ def crossValidation(filenames, k, learningRate, optimiser, loss, epoch, embNum, 
 	
 	#cross-validation
 	res = []
+	fullRes = []
 	for i in range(len(dataSets)):
 		print("cross validation it: " + str(i+1) + "/" + str(len(dataSets)))
 		#creating test set and training set
@@ -222,10 +223,16 @@ def crossValidation(filenames, k, learningRate, optimiser, loss, epoch, embNum, 
 		print("", flush=True)
 		#print(topk.numpy())
 		res.append(topKMetrics(topk, [(str(i["CUSTOMER_ID"].numpy()), str(i["MATERIAL"].numpy())) for i in testSet], usersId, matId))
-		print("Metrics:",res[-1],flush=True)
 		
 		#making ready for next it
 		dataSets.append(testData)
+		if randomZero:
+			fullRes.append(topKMetrics(topk, [(str(i["CUSTOMER_ID"].numpy()), str(i["MATERIAL"].numpy())) for i in tf.data.Dataset.from_tensor_slices(dict(pd.concat(testDataSets, ignore_index=True)))], usersId, matId))
+		else:
+			fullRes.append(topKMetrics(topk, [(str(i["CUSTOMER_ID"].numpy()), str(i["MATERIAL"].numpy())) for i in tf.data.Dataset.from_tensor_slices(dict(pd.concat(dataSets, ignore_index=True)))], usersId, matId))
+			
+		print("Metrics:",res[-1],flush=True)
+		print("Full dataset metrics:",fullRes[-1],flush=True)
 	
 	#computing average results
 	averageMetrics = {}
@@ -235,6 +242,14 @@ def crossValidation(filenames, k, learningRate, optimiser, loss, epoch, embNum, 
 			averageMetrics[metrics] += itRes[metrics]
 		
 		averageMetrics[metrics] /= len(dataSets)
+	
+	for metrics in fullRes[0]:
+		key = "full_"+metrics
+		averageMetrics[key] = 0
+		for itRes in fullRes:
+			averageMetrics[key] += itRes[metrics]
+		
+		averageMetrics[key] /= len(dataSets)
 	
 	return averageMetrics
 	

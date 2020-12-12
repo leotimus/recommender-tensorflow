@@ -39,7 +39,7 @@ def create_graph_from_csv (filepath):
 
    csvData = data[1:-1]
    memMB = [int(i[2]) for i in csvData]
-   timeSeconds = [int(i[0]) for i in csvData]
+   timeSeconds = [i[0] for i in csvData]
    cpuPercent = [float(i[1]) for i in csvData]
    gpuPercent = [float(i[3]) for i in csvData]
 
