@@ -31,7 +31,12 @@ def log_stats(pollTime, timeCounter, filepath):
    #print ("%s %.2f" % (psutil.cpu_percent(), psutil.virtual_memory().used/(1024**2)))
    with open(filepath, 'a', newline='') as file:
       writer = csv.writer(file)
-      writer.writerow([timeCounter, psutil.cpu_percent(), round(psutil.Process().memory_info().rss / (1024**2)), round(GPUtil.getGPUs()[0].load * 100, 1)])
+      gpu = 0
+      
+      if len(GPUtil.getGPUs()) > 0:
+         gpu = round(GPUtil.getGPUs()[0].load * 100, 1)
+      
+      writer.writerow([timeCounter, psutil.cpu_percent(), round(psutil.Process().memory_info().rss / (1024**2)), gpu])
 
 def create_graph_from_csv (filepath):
    with open(filepath, 'r') as f:
