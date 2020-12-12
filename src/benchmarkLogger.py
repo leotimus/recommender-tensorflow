@@ -23,7 +23,7 @@ class benchThread (threading.Thread):
       while self.active:
          timeCounter += self.pollTime
          log_stats(self.pollTime, timeCounter, self.filepath)
-      create_graph_from_csv(self.filepath)
+      create_graph_from_csv(self.pollTime, self.filepath)
       print ("Exiting " + self.name)
 
 def log_stats(pollTime, timeCounter, filepath):
@@ -33,13 +33,13 @@ def log_stats(pollTime, timeCounter, filepath):
       writer = csv.writer(file)
       writer.writerow([timeCounter, psutil.cpu_percent(), round(psutil.Process().memory_info().rss / (1024**2)), round(GPUtil.getGPUs()[0].load * 100, 1)])
 
-def create_graph_from_csv (filepath):
+def create_graph_from_csv (pollTime, filepath):
    with open(filepath, 'r') as f:
       data = list(csv.reader(f))
 
    csvData = data[1:-1]
    memMB = [int(i[2]) for i in csvData]
-   timeSeconds = [i[0] for i in csvData]
+   timeSeconds = [float(i[0]) for i in csvData]
    cpuPercent = [float(i[1]) for i in csvData]
    gpuPercent = [float(i[3]) for i in csvData]
 
