@@ -18,5 +18,5 @@
 *.ipynb
 main.log*
 venv
-
 .vscode/
+trainers/NFC_plain.py
