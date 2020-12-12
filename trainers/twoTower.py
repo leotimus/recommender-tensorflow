@@ -32,8 +32,12 @@ class TwoTowerModel(tf.keras.Model):
 		self.userTower = tf.keras.Sequential([self.userTowerIn, self.userTowerOut, tf.keras.layers.Dense(semb)])
 		self.itemTower = tf.keras.Sequential([self.itemTowerIn, self.itemTowerOut, tf.keras.layers.Dense(semb)])
 		
-		self.outputLayer = tf.keras.layers.Dot(axes=-1)
-		self.task = tfrs.tasks.Retrieval(loss = loss)
+		if rdZero:
+			self.outputLayer = tf.keras.layers.Dot(axes=-1)
+			self.computeLoss = self.computeLossRdZero
+		else:
+			self.task = tfrs.tasks.Retrieval(loss = loss)
+			self.computeLoss = self.computeLossTfrs
 		
 		#self.outputLayer = tf.keras.Sequential(tf.keras.layers.Dense(32, input_shape=(embedDim*2,), activation = "sigmoid"))
 		#self.outputLayer.add(tf.keras.layers.Dense(1, activation = "sigmoid"))
@@ -67,16 +71,20 @@ class TwoTowerModel(tf.keras.Model):
 		itemCaracteristics = self.itemTower(info[self.itemKey])
 		return (usersCaracteristics, itemCaracteristics)
 	
+	def computeLossTfrs(self, usersCaracteristics, itemCaracteristics, info):
+		return self.task(usersCaracteristics, itemCaracteristics, compute_metrics = False, training = True, candidate_ids = info[self.itemKey])
+	
+	def computeLossRdZero(self, usersCaracteristics, itemCaracteristics, info):
+			pred = tf.keras.activations.sigmoid(self.outputLayer([usersCaracteristics, itemCaracteristics]))
+			return self.compiled_loss(info[self.resKey], pred)
+	
 	def train_step(self, info):
 		with tf.GradientTape() as tape:
 			#pred = self(info, training = True)
 			#loss = self.compiled_loss(info[self.resKey], pred)
 			usersCaracteristics, itemCaracteristics = self.computeEmb(info)
-			if self.rdZero:
-				pred = tf.keras.activations.sigmoid(self.outputLayer([usersCaracteristics, itemCaracteristics]))
-				loss = self.compiled_loss(info[self.resKey], pred)
-			else:
-				loss = self.task(usersCaracteristics, itemCaracteristics, compute_metrics = False, training = True, candidate_ids = info[self.itemKey])
+			loss = self.computeLoss(usersCaracteristics, itemCaracteristics, info)
+				
 		
 		#print(self.trainable_variables)
 		gradients = tape.gradient(loss, self.trainable_variables)
@@ -166,7 +174,7 @@ def crossValidation(filenames, k, learningRate, optimiser, loss, epoch, embNum, 
 		
 		#creating model
 		model = TwoTowerModel(embNum, len(matId), len(usersId), "CUSTOMER_ID", "MATERIAL", usersId, matId, eval_batch_size = batchSize, loss = loss, rdZero = randomZero, resKey = "RATING_TYPE", semb = semb)
-		model.compile(optimizer = getOptimizer(optimiser, learningRate = learningRate), loss = "MSE") #tf.keras.losses.BinaryCrossentropy())
+		model.compile(optimizer = getOptimizer(optimiser, learningRate = learningRate), loss = tf.keras.losses.BinaryCrossentropy())
 		
 		#preparing trainingSet
 		trainSet = trainSet.shuffle(len(trainSet), reshuffle_each_iteration=False)
@@ -217,8 +225,10 @@ if __name__ == "__main__":
 	loss = None
 	#filename = [r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_5.csv"]
 	#rdZeroFilename = [r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_1.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_2.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_3.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_4.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_5.csv"]
-	filename = [r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_5.csv"]
-	rdZeroFilename = [r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_1.csv", r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_2.csv", r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_3.csv", r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_4.csv", r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_5.csv"]
+	#filename = [r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_5.csv"]
+	#rdZeroFilename = [r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_1.csv", r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_2.csv", r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_3.csv", r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_4.csv", r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_5.csv"]
+	filename = [r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_5.csv"]
+	rdZeroFilename = [r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_1.csv", r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_2.csv", r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_3.csv", r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_4.csv", r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_5.csv"]
 	epoch = 3
 	semb = 125
 	embNum = 300
