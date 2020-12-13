@@ -185,7 +185,7 @@ def crossValidation(filenames, k, learningRate, optimiser, loss, epoch, embNum, 
 		
 		#starting benchmark
 		print("Create benchmark thread", flush=True)
-		bmThread = benchThread(0.1,1,bname+"/it"+str(i)+"_"+datetime.now().strftime("%d_%H_%M_%S"))
+		bmThread = benchThread(0.01,1,bname+"/it"+str(i)+"_"+datetime.now().strftime("%d_%H_%M_%S"))
 		print("Done", flush=True)
 		bmThread.start()
 		
@@ -267,13 +267,13 @@ if __name__ == "__main__":
 	#rdZeroFilename = [r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_1.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_2.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_3.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_4.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_5.csv"]
 	#filename = [r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_5.csv"]
 	#rdZeroFilename = [r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_1.csv", r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_2.csv", r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_3.csv", r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_4.csv", r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_5.csv"]
-	filename = [r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\100k\ds2_100k_timeDistributed_5.csv"]
-	rdZeroFilename = [r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_1.csv", r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_2.csv", r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_3.csv", r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_4.csv", r"(NEW)CleanDatasets\NCF\100k\ds2_100k_timeDistributed_5.csv"]
+	filename = [r"(NEW)CleanDatasets\TT\500k\ds2_500k_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\500k\ds2_500k_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\500k\ds2_500k_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\500k\ds2_500k_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\500k\ds2_500k_timeDistributed_5.csv"]
+	rdZeroFilename = [r"(NEW)CleanDatasets\NCF\500k\ds2_500k_timeDistributed_1.csv", r"(NEW)CleanDatasets\NCF\500k\ds2_500k_timeDistributed_2.csv", r"(NEW)CleanDatasets\NCF\500k\ds2_500k_timeDistributed_3.csv", r"(NEW)CleanDatasets\NCF\500k\ds2_500k_timeDistributed_4.csv", r"(NEW)CleanDatasets\NCF\500k\ds2_500k_timeDistributed_5.csv"]
 	#filename = [r"(NEW)CleanDatasets\TT\10m\ds2_10m_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\10m\ds2_10m_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\10m\ds2_10m_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\10m\ds2_10m_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\10m\ds2_10m_timeDistributed_5.csv"]
 	epoch = 3
-	semb = 125
-	embNum = 300
-	batchSize = 5000
+	semb = 50
+	embNum = 75
+	batchSize = 1000
 	testBatchSize = 5000
 	k = 10
 	randomZero = False
