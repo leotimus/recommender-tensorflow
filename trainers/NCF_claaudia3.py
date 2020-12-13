@@ -27,10 +27,10 @@ print ('Loading dataset..')
 
 smbc.ClientConfig(username='jpolas20@student.aau.dk', password='NMvcbchacsnL2022')
 
-with smbc.open_file((r"\\cs.aau.dk\Fileshares\IT703e20\(NEW)CleanDatasets\NCF\5m\train.csv"), mode="r") as f:
+with smbc.open_file((r"\\cs.aau.dk\Fileshares\IT703e20\(NEW)CleanDatasets\NCF\10m\train.csv"), mode="r") as f:
      train = pd.read_csv(f, header=0, names=['customer_id', 'normalized_customer_id', 'material', 'product_id', 'rating_type'])
 
-with smbc.open_file((r"\\cs.aau.dk\Fileshares\IT703e20\(NEW)CleanDatasets\NCF\5m\test.csv"), mode="r") as f:
+with smbc.open_file((r"\\cs.aau.dk\Fileshares\IT703e20\(NEW)CleanDatasets\NCF\10m\test.csv"), mode="r") as f:
      test = pd.read_csv(f, header=0, names=['customer_id', 'normalized_customer_id', 'material', 'product_id', 'rating_type'])
 
 # with smbc.open_file((r"\\cs.aau.dk\Fileshares\IT703e20\(NEW)CleanDatasets\NCF\100k\positives100k.csv"), mode="r") as f:
