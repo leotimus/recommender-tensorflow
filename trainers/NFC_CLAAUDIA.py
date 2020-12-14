@@ -95,7 +95,7 @@ material_vec_mf = Flatten(name='flatten-material-mf')(material_embedding_mf)
 customer_embedding_mf = Embedding(num_customers + 1, latent_dim, name='customer-embedding-mf')(customer_input)
 customer_vec_mf = Flatten(name='flatten-customer-mf')(customer_embedding_mf)
 
-PARAMS = {'epoch_nr': 0,
+PARAMS = {'epoch_nr': 1,
           'batch_size': 50000,
           'lr': 0.001,
           'momentum': 0.4,
@@ -130,9 +130,9 @@ print ('Training model')
 history = model.fit([train.normalized_customer_id, train.product_id], train.rating_type, epochs=PARAMS['epoch_nr'], batch_size=PARAMS['batch_size'], shuffle=True, verbose=2)
 #model.save('D:/ML/GrundfosData/NCF_savedModels/100k/with0s')
 
-pd.Series(history.history['loss']).plot(logy=True)
-plt.xlabel("Epoch")
-plt.ylabel("Train Error")
+#pd.Series(history.history['loss']).plot(logy=True)
+#plt.xlabel("Epoch")
+#plt.ylabel("Train Error")
 print ('Training model...Done')
 
 print ('Predict model')
