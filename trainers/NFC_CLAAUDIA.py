@@ -95,7 +95,7 @@ material_vec_mf = Flatten(name='flatten-material-mf')(material_embedding_mf)
 customer_embedding_mf = Embedding(num_customers + 1, latent_dim, name='customer-embedding-mf')(customer_input)
 customer_vec_mf = Flatten(name='flatten-customer-mf')(customer_embedding_mf)
 
-PARAMS = {'epoch_nr': 20,
+PARAMS = {'epoch_nr': 10,
           'batch_size': 50000,
           'lr': 0.01,
           'momentum': 0.4,
