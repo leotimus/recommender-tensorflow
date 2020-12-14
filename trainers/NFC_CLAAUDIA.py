@@ -157,8 +157,22 @@ unique_customers = allPositives.normalized_customer_id.unique()
 unique_products = allPositives.product_id.unique()
 
 res= []
+res2= []
 
 topk = trainerTop.topKRatings(10, model, unique_customers, unique_products, mtype="NFC")
 
+print ("positives_5th")
 res.append(trainerTop.topKMetrics(topk, [(positives_5th_split.normalized_customer_id[i], positives_5th_split.product_id[i]) for i in positives_5th_split.id], unique_customers, unique_products))
 print(res[-1], flush=True)
+
+f = open("testsplit_results.txt", "a")
+f.write(res[-1])
+f.close()
+
+print ("allpositives")
+res2.append(trainerTop.topKMetrics(topk, [(allPositives.normalized_customer_id[i], allPositives.product_id[i]) for i in allPositives.id], unique_customers, unique_products))
+print(res2[-1], flush=True)
+
+f = open("allPositives_results.txt", "a")
+f.write(res2[-1])
+f.close()
