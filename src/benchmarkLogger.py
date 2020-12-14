@@ -15,23 +15,23 @@ class benchThread (threading.Thread):
       self.daemon = True #useful to exit the logger when the main thread crashes  or is interrupted
 
    def run(self):
-      timeCounter = 0
+      startTime = time.time()
       print ("Starting " + self.name)
       with open(self.filepath, 'w+', newline='') as file:
          writer = csv.writer(file)
          writer.writerow(["Time (s)", "CPU %", "Memory MB", "GPU %"])
       while self.active:
-         timeCounter += self.pollTime
-         log_stats(self.pollTime, timeCounter, self.filepath)
+         log_stats(self.pollTime, startTime, self.filepath)
       create_graph_from_csv(self.filepath)
       print ("Exiting " + self.name)
 
-def log_stats(pollTime, timeCounter, filepath):
-   time.sleep(pollTime)
+def log_stats(pollTime, startTime, filepath):
    #print ("%s %.2f" % (psutil.cpu_percent(), psutil.virtual_memory().used/(1024**2)))
    with open(filepath, 'a', newline='') as file:
       writer = csv.writer(file)
-      writer.writerow([timeCounter, psutil.cpu_percent(), round(psutil.Process().memory_info().rss / (1024**2)), round(GPUtil.getGPUs()[0].load * 100, 1)])
+      writer.writerow([time.time()-startTime, psutil.cpu_percent(), round(psutil.Process().memory_info().rss / (1024**2)), round(GPUtil.getGPUs()[0].load * 100, 1)])
+   time.sleep(pollTime)
+
 
 def create_graph_from_csv (filepath):
    with open(filepath, 'r') as f:
@@ -39,7 +39,7 @@ def create_graph_from_csv (filepath):
 
    csvData = data[1:-1]
    memMB = [int(i[2]) for i in csvData]
-   timeSeconds = [int(i[0]) for i in csvData]
+   timeSeconds = [float(i[0]) for i in csvData]
    cpuPercent = [float(i[1]) for i in csvData]
    gpuPercent = [float(i[3]) for i in csvData]
 
