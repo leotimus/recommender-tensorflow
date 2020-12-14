@@ -29,7 +29,7 @@ def topKRatings(k, model, usersId, itemsId, mtype=None):
 		newratings = []
 		if isNFC:
 			candidate = pd.DataFrame({"customer-input":[u for i in range(len(itemsId))], "material-input":itemslst})
-			ratings = list(model.predict(tf.data.Dataset.from_tensor_slices(dict(candidate)).batch(len(itemsId))))
+			ratings = list(model.predict(tf.data.Dataset.from_tensor_slices(dict(candidate)).batch(len(5000))))
 			newratings = [(ratings[i], itemsId[i]) for i in range(len(itemsId))]
 		else:
 			var["__currentUserId"] = u
