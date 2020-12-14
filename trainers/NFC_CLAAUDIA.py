@@ -70,8 +70,8 @@ positives_5th_split.drop(columns=['customer_id','material'])
 #             neptune.log_metric(metric_name, metric_value)
 
 #comp resource benchmarking
-bmThread = benchThread(1,1,'2m_benchmarks.csv') #create the thread
-bmThread.start()
+#bmThread = benchThread(1,1,'2m_benchmarks.csv') #create the thread
+#bmThread.start()
 
 
 #Build the model
@@ -95,9 +95,9 @@ material_vec_mf = Flatten(name='flatten-material-mf')(material_embedding_mf)
 customer_embedding_mf = Embedding(num_customers + 1, latent_dim, name='customer-embedding-mf')(customer_input)
 customer_vec_mf = Flatten(name='flatten-customer-mf')(customer_embedding_mf)
 
-PARAMS = {'epoch_nr': 1,
+PARAMS = {'epoch_nr': 20,
           'batch_size': 50000,
-          'lr': 0.001,
+          'lr': 0.01,
           'momentum': 0.4,
           'unit_nr1': 100,
           'unit_nr1': 50,
@@ -141,9 +141,9 @@ y_true = test.rating_type
 mean_absolute_error(y_true, y_hat)
 print ('Predict model...Done')
 
-bmThread.active = 0 #deactivate the thread, will exit on the next while loop cycle
-bmThread.join()  # wait for it to exit on its own, since its daemon as a precaution
-print("Done",flush=True)
+#bmThread.active = 0 #deactivate the thread, will exit on the next while loop cycle
+#bmThread.join()  # wait for it to exit on its own, since its daemon as a precaution
+#print("Done",flush=True)
 
 print ('Evaluate model')
 model.evaluate([test.normalized_customer_id, test.product_id], test.rating_type, verbose=2)
