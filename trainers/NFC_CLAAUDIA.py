@@ -25,7 +25,7 @@ print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('
 
 print ('Loading dataset..')
 
-smbc.ClientConfig(username='jpolas20@student.aau.dk', password='NMvcbchacsnL2022')
+smbc.ClientConfig(username='', password='')
 
 with smbc.open_file((r"\\cs.aau.dk\Fileshares\IT703e20\(NEW)CleanDatasets\NCF\2m(OG)\train.csv"), mode="r") as f:
      train = pd.read_csv(f, header=0, names=['customer_id', 'normalized_customer_id', 'material', 'product_id', 'rating_type'])
