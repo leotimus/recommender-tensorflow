@@ -29,7 +29,7 @@ class TwoTowerModel(tf.keras.Model):
 		self.eval_batch_size = eval_batch_size
 		self.rdZero = rdZero
 		#print(nbrItem)
-
+		
 		self.userTowerIn = tf.keras.layers.experimental.preprocessing.StringLookup(vocabulary = usersId)
 		self.userTowerOut = tf.keras.layers.Embedding(nbrUser+2, embedDim)
 		self.itemTowerIn = tf.keras.layers.experimental.preprocessing.StringLookup(vocabulary = itemsId)
@@ -92,7 +92,6 @@ class TwoTowerModel(tf.keras.Model):
 			#loss = self.compiled_loss(info[self.resKey], pred)
 			usersCaracteristics, itemCaracteristics = self.computeEmb(info)
 			loss = self.computeLoss(usersCaracteristics, itemCaracteristics, info)
-			
 		#print(self.trainable_variables)
 		gradients = tape.gradient(loss, self.trainable_variables)
 		self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
@@ -137,8 +136,14 @@ def crossValidation(filenames, k, learningRate, optimiser, loss, epoch, embNum, 
 	if randomZero:
 		for filename in rdZeroFilenames:
 			rdZeroDataSets.append(gfData(filename, username, psw, rdZero = True))
+<<<<<<< HEAD
 	
 	print("Extracting data", flush=True)
+=======
+
+	print("Loading done.")
+	
+>>>>>>> benchmarking
 	#getting all unique users id and materials id + extracting datasets
 	usersId = []
 	matId = []
@@ -155,10 +160,18 @@ def crossValidation(filenames, k, learningRate, optimiser, loss, epoch, embNum, 
 		datas = []
 		for dataSet in rdZeroDataSets:
 			datas.append(dataSet["ratings"])
-	
+
 		dataSets, testDataSets = datas, dataSets #make the datasets with randomly added zeros the training datasets
+<<<<<<< HEAD
 	
 	
+=======
+
+
+
+
+
+>>>>>>> benchmarking
 	#cross-validation
 	res = []
 	fullRes = []
@@ -166,10 +179,10 @@ def crossValidation(filenames, k, learningRate, optimiser, loss, epoch, embNum, 
 		print("cross validation it: " + str(i+1) + "/" + str(len(dataSets)))
 		#creating test set and training set
 		testData = dataSets.pop(0)
-		
+
 		if randomZero:
 			testData, fakeTestData = testDataSets.pop(0), testData #change to make the test set wanted
-			
+
 		testSet = tf.data.Dataset.from_tensor_slices(dict(testData))
 		trainSet = tf.data.Dataset.from_tensor_slices(dict(pd.concat(dataSets, ignore_index=True)))
 		
@@ -177,6 +190,13 @@ def crossValidation(filenames, k, learningRate, optimiser, loss, epoch, embNum, 
 			#make the change of test set invisible for the rest of the function
 			testDataSets.append(testData)
 			testData = fakeTestData
+<<<<<<< HEAD
+=======
+
+		#creating model
+		model = TwoTowerModel(embNum, len(matId), len(usersId), "CUSTOMER_ID", "MATERIAL", usersId, matId, eval_batch_size = batchSize, loss = loss, rdZero = randomZero, resKey = "RATING_TYPE", semb = semb)
+		model.compile(optimizer = getOptimizer(optimiser, learningRate = learningRate), loss = "MSE") #tf.keras.losses.BinaryCrossentropy())
+>>>>>>> benchmarking
 		
 		#preparing trainingSet
 		print("Shuffuling training set", flush=True)
@@ -256,13 +276,26 @@ def crossValidation(filenames, k, learningRate, optimiser, loss, epoch, embNum, 
 	return averageMetrics
 	
 	
+		
+		
+	
+	
+	
+	
+
 
 if __name__ == "__main__":
+<<<<<<< HEAD
+=======
+	bmThread = benchThread(0.01,1,'TopK100kNewTime.csv') #create the thread
+	bmThread.start() #and start it
+>>>>>>> benchmarking
 	print(sys.argv)
 	learningRate = 0.1
 	optimiser = "Adagrad"
 	splitRatio = 0.8
 	loss = None
+<<<<<<< HEAD
 	filename = [r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_5.csv"]
 	rdZeroFilename = [r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_1.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_2.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_3.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_4.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_5.csv"]
 	#filename = [r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_5.csv"]
@@ -270,6 +303,12 @@ if __name__ == "__main__":
 	#filename = [r"(NEW)CleanDatasets\TT\500k\ds2_500k_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\500k\ds2_500k_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\500k\ds2_500k_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\500k\ds2_500k_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\500k\ds2_500k_timeDistributed_5.csv"]
 	#rdZeroFilename = [r"(NEW)CleanDatasets\NCF\500k\ds2_500k_timeDistributed_1.csv", r"(NEW)CleanDatasets\NCF\500k\ds2_500k_timeDistributed_2.csv", r"(NEW)CleanDatasets\NCF\500k\ds2_500k_timeDistributed_3.csv", r"(NEW)CleanDatasets\NCF\500k\ds2_500k_timeDistributed_4.csv", r"(NEW)CleanDatasets\NCF\500k\ds2_500k_timeDistributed_5.csv"]
 	#filename = [r"(NEW)CleanDatasets\TT\10m\ds2_10m_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\10m\ds2_10m_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\10m\ds2_10m_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\10m\ds2_10m_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\10m\ds2_10m_timeDistributed_5.csv"]
+=======
+	#filename = [r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\2m(OG)\ds2_OG(2m)_timeDistributed_5.csv"]
+	#rdZeroFilename = [r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_1.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_2.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_3.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_4.csv", r"(NEW)CleanDatasets\NCF\2m(OG)\ds2_OG(2m)_timeDistributed_5.csv"]
+	filename = [r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_1.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_2.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_3.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_4.csv", r"(NEW)CleanDatasets\TT\1m\ds2_1m_timeDistributed_5.csv"]
+	rdZeroFilename = [r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_1.csv", r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_2.csv", r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_3.csv", r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_4.csv", r"(NEW)CleanDatasets\NCF\1m\ds2_1m_timeDistributed_5.csv"]
+>>>>>>> benchmarking
 	epoch = 3
 	semb = 50
 	embNum = 75
@@ -295,19 +334,23 @@ if __name__ == "__main__":
 			optimiser = sys.argv[i+1]
 		elif sys.argv[i] == "randomZero":
 			randomZero = True
+<<<<<<< HEAD
 		elif sys.argv[i] == "bname":
 			bname = "../result/benchmarking-project-ma1/"+sys.argv[i+1]
 	
+=======
+
+>>>>>>> benchmarking
 	res = crossValidation(
-		filename, 
-		k, 
-		learningRate, 
-		optimiser, 
-		loss, 
-		epoch, 
-		embNum, 
-		batchSize, 
-		rdZeroFilenames = rdZeroFilename, 
+		filename,
+		k,
+		learningRate,
+		optimiser,
+		loss,
+		epoch,
+		embNum,
+		batchSize,
+		rdZeroFilenames = rdZeroFilename,
 		randomZero = randomZero,
 		testBatchSize = testBatchSize,
 		semb = semb,
@@ -317,9 +360,14 @@ if __name__ == "__main__":
 	with open("../result/twoTowerResult_deep", "a") as f:
 		f.write("k: " + str(k) + ", learning rate: " + str(learningRate) + ", optimiser: " + optimiser + ", splitRatio: " + str(splitRatio) + ", loss: " + str(loss) + ", filename: " + str(filename) + ", use randomly added zeros: " + str(randomZero) + ", randomly added zeros filename: " + str(rdZeroFilename) + ", epoch: " + str(epoch) + ", nbr embedings: " + str(embNum) + ", second emb: " + str(semb) + ", batchSize: " + str(batchSize) + "\n")
 		f.write(str(res) + "\n")
+<<<<<<< HEAD
 	#with open("../result/twoTowerResult", "a") as f:
 		#f.write("k: " + str(k) + ", learning rate: " + str(learningRate) + ", optimiser: " + optimiser + ", splitRatio: " + str(splitRatio) + ", loss: " + str(loss) + ", filename: " + str(filename) + ", epoch: " + str(epoch) + "nbr embedings: " + str(embNum) + ", batchSize: " + str(batchSize) + "\n")
 		#f.write(str(res) + "\n")
+=======
+	bmThread.active = 0 #deactivate the thread, will exit on the next while loop cycle
+	bmThread.join()  # wait for it to exit on its own, since its daemon as a precaution
+>>>>>>> benchmarking
 	print("Done",flush=True)
 
 
