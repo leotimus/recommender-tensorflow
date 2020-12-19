@@ -1,15 +1,15 @@
 import numpy as np
 import pandas as pd
 import math
-import trainers.topKMetrics as topk
+import topKMetrics as topk
 import smbclient as smbc
 import tensorflow as tf
 import tensorflow_recommenders as tfrs
 import git
 from datetime import datetime
-from src.AAUfilename import getAAUfilename
+from AAUfilename import getAAUfilename
 from getpass import getpass
-from src.benchmarkLogger import benchThread
+from benchmarkLogger import benchThread
 
 EPOCHS = 1
 LEARNING_RATE = 0.01
